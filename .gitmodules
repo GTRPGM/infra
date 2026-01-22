@@ -1,0 +1,18 @@
+[submodule "BE-router"]
+	path = BE-router
+	url = git@github.com:GTRPGM/BE-router.git
+[submodule "gm"]
+	path = gm
+	url = git@github.com:GTRPGM/gm.git
+[submodule "state-manager"]
+	path = state-manager
+	url = git@github.com:GTRPGM/state-manager.git
+[submodule "senario-writer"]
+	path = senario-writer
+	url = git@github.com:GTRPGM/senario-writer.git
+[submodule "rule-engine"]
+	path = rule-engine
+	url = git@github.com:GTRPGM/rule-engine.git
+[submodule "llm-gateway"]
+	path = llm-gateway
+	url = git@github.com:GTRPGM/llm-gateway.git
