@@ -16,3 +16,6 @@
 [submodule "llm-gateway"]
 	path = llm-gateway
 	url = git@github.com:GTRPGM/llm-gateway.git
+[submodule "WEB"]
+	path = WEB
+	url = git@github.com:GTRPGM/WEB.git
