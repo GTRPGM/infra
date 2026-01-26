@@ -2,7 +2,7 @@
 FROM postgres:16-bookworm AS builder
 
 ARG PGVECTOR_VER=v0.7.4
-ARG AGE_VER=v1.5.0
+ARG AGE_VER=release/PG16/1.6.0
 
 RUN set -eux; \
   apt-get update; \
@@ -10,7 +10,7 @@ RUN set -eux; \
     ca-certificates git build-essential make cmake \
     postgresql-server-dev-16 \
     libreadline-dev zlib1g-dev \
-    clang llvm \
+    clang llvm flex bison \
   ; \
   rm -rf /var/lib/apt/lists/*
 
@@ -39,8 +39,6 @@ COPY --from=builder /usr/share/postgresql/16/extension/ /usr/share/postgresql/16
 
 # AGE는 shared_preload_libraries 필요
 RUN set -eux; \
-  echo "shared_preload_libraries = 'age'" >> /usr/share/postgresql/postgresql.conf.sample; \
-  echo "search_path = '\"$user\", public, ag_catalog'" >> /usr/share/postgresql/postgresql.conf.sample
+  printf "\n# AGE Config\nshared_preload_libraries = 'age'\nsearch_path = '\"\$user\", public, ag_catalog'\n" >> /usr/share/postgresql/postgresql.conf.sample
 
-# 초기화 SQL (컨테이너 최초 기동 시 1회 실행)
 COPY ./initdb/ /docker-entrypoint-initdb.d/
