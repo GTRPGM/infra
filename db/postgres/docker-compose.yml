@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "127.0.0.1:${DB_PORT}:5432"
+      - "0.0.0.0:${DB_PORT}:5432"
 
     environment:
       POSTGRES_USER: ${DB_USER}
