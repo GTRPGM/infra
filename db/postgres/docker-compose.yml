@@ -26,6 +26,8 @@ services:
 
 volumes:
   pgdata:
+    external: true
+
 
 networks:
   platform-net:
