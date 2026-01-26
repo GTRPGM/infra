@@ -39,6 +39,6 @@ COPY --from=builder /usr/share/postgresql/16/extension/ /usr/share/postgresql/16
 
 # AGE는 shared_preload_libraries 필요
 RUN set -eux; \
-  printf "\n# AGE Config\nshared_preload_libraries = 'age'\nsearch_path = '\"\$user\", public, ag_catalog'\n" >> /usr/share/postgresql/postgresql.conf.sample
+  printf "\n# AGE Config\nshared_preload_libraries = 'age,pg_stat_statements'\nsearch_path = '\"\$user\", public, ag_catalog'\n" >> /usr/share/postgresql/postgresql.conf.sample
 
 COPY ./initdb/ /docker-entrypoint-initdb.d/

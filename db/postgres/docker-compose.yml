@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   postgres:
-    image: ${IMAGE_NAME}:latest
+    image: ${IMAGE_NAME}
     container_name: postgres
     restart: unless-stopped
 
@@ -17,15 +15,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-    command:
-      - postgres
-      - -c
-      - shared_preload_libraries=age
-      - -c
-      - search_path="\"$user\", public, ag_catalog"
-
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 5s
       timeout: 3s
       retries: 5

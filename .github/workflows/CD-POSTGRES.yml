@@ -2,7 +2,7 @@ name: build-and-push-postgres
 
 on:
   push:
-    branches: 
+    branches:
       - "main"
       - "ops/4-db-deploy"
   pull_request:
@@ -12,9 +12,11 @@ on:
 env:
   REGISTRY: ${{ vars.REGISTRY }}
   ORG_NAME: ${{ vars.ORG_NAME }}
-  IMAGE_NAME: ${{ vars.REGISTRY }}/${{ vars.ORG_NAME }}/${{ github.repository }}-postgres-ex
+  SERVICE_NAME: ${{ vars.SERVICE_NAME }}
+  IMAGE_NAME: ${{ vars.REGISTRY }}/${{ vars.ORG_NAME }}/${{ vars.SERVICE_NAME }}-ex
   PORT: ${{ secrets.DB_PORT }}
-  CONTAINER_NAME: postgres
+  TAG: ${{ vars.TAG }}
+  BUILD_CONTEXT: ${{vars.BUILD_CONTEXT}}
 
 jobs:
   build-and-push:
@@ -25,7 +27,7 @@ jobs:
       id-token: write
 
     outputs:
-      image: ${{ env.IMAGE_NAME }}:latest
+      image: ${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
     steps:
       - uses: actions/checkout@v4
@@ -43,12 +45,12 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=pg16-ex
+            type=raw,value=${{ env.TAG }}
             type=sha,format=short
 
       - uses: docker/build-push-action@v6
         with:
-          context: ./db/postgres
+          context: ${{ env.BUILD_CONTEXT }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -70,7 +72,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull image
-        run: docker pull ${{ env.IMAGE_NAME }}:latest
+        run: docker pull ${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
       - name: Run container
         run: |
@@ -79,14 +81,18 @@ jobs:
             -p ${{ env.PORT }}:5432 \
             -e POSTGRES_USER=dummy \
             -e POSTGRES_PASSWORD=dummy \
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
       - name: Wait for health
         run: |
-          for i in {1..15}; do
-            curl -f http://localhost:${{ env.DB_PORT }}/health && exit 0
+          for i in {1..20}; do
+            if docker exec test-container pg_isready -U dummy; then
+              echo "Postgres is ready"
+              exit 0
+            fi
             sleep 2
           done
+
           echo "Smoke test failed"
           docker logs test-container
           exit 1
@@ -104,29 +110,34 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            docker-compose.yml
+            ${{ env.BUILD_CONTEXT }}/docker-compose.yml
           sparse-checkout-cone-mode: false
 
+      - name: Prepare compose
+        run: cp ${{ env.BUILD_CONTEXT }}/docker-compose.yml docker-compose.yml
+
       - name: Upload docker-compose.yml
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USERNAME }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           source: docker-compose.yml
-          target: /opt/services/${{ env.CONTAINER_NAME }}
+
+          target: /opt/services/${{ env.SERVICE_NAME }}
 
       - name: Deploy Image to GCP
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USERNAME }}
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
+          debug: true
           script: |
-            cd /opt/services/${{ env.CONTAINER_NAME }}
+            cd /opt/services/${{ env.SERVICE_NAME }} && ls
 
-            export IMAGE_NAME=${{ env.IMAGE_NAME }}
+            export IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
             export DB_PORT=${{ secrets.DB_PORT }}
             export DB_USER=${{ secrets.DB_USER }}
