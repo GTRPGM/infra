@@ -2,7 +2,9 @@ name: build-and-push-postgres
 
 on:
   push:
-    branches: ["main"]
+    branches: 
+      - "main"
+      - "ops/4-db-deploy"
   pull_request:
     branches: ["main"]
   workflow_dispatch:
