@@ -1,0 +1,15 @@
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+    up)
+        docker compose -f db/postgres/docker-compose.dev.yml up -d
+        ;;
+    down)
+        docker compose -f db/postgres/docker-compose.dev.yml down
+        ;;
+    *)
+        echo "Usage: remote {connect|postgres}"
+        exit 1
+        ;;
+esac
