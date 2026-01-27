@@ -7,9 +7,6 @@
 [submodule "state-manager"]
 	path = state-manager
 	url = git@github.com:GTRPGM/state-manager.git
-[submodule "senario-writer"]
-	path = senario-writer
-	url = git@github.com:GTRPGM/senario-writer.git
 [submodule "rule-engine"]
 	path = rule-engine
 	url = git@github.com:GTRPGM/rule-engine.git
@@ -19,3 +16,6 @@
 [submodule "WEB"]
 	path = WEB
 	url = git@github.com:GTRPGM/WEB.git
+[submodule "scenario-service"]
+	path = scenario-service
+	url = git@github.com:GTRPGM/scenario-service.git
