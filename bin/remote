@@ -1,0 +1,18 @@
+#!/bin/bash
+
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+    connect)
+        ssh -i "$GITHUB_DEPLOY_KEY_PATH" "$REMOTE_USERNAME@$REMOTE_HOST"
+        ;;
+    postgres)
+        ssh -i "$GITHUB_DEPLOY_KEY_PATH" -t "$REMOTE_USERNAME@$REMOTE_HOST" \
+        "docker exec -it postgres psql -U gtrpgm -d gtrpgm"
+        ;;
+    *)
+        echo "Usage: remote {connect|postgres}"
+        exit 1
+        ;;
+esac
