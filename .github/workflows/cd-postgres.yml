@@ -1,5 +1,4 @@
-name: build-and-push-postgres
-
+name: cd-postgres
 on:
   push:
     branches:
@@ -16,7 +15,7 @@ env:
   IMAGE_NAME: ${{ vars.REGISTRY }}/${{ vars.ORG_NAME }}/${{ vars.SERVICE_NAME }}-ex
   PORT: ${{ secrets.DB_PORT }}
   TAG: ${{ vars.TAG }}
-  BUILD_CONTEXT: ${{vars.BUILD_CONTEXT}}
+  BUILD_CONTEXT: ${{ vars.BUILD_CONTEXT }}
 
 jobs:
   build-and-push:
@@ -135,11 +134,18 @@ jobs:
           port: 22
           debug: true
           script: |
+            set -e
+
+            export DOCKER_CONFIG=$(mktemp -d)
+            trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+
             cd /opt/services/${{ env.SERVICE_NAME }} && ls
 
             export IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
-            export DB_PORT=${{ secrets.DB_PORT }}
+            export DB_PORT=${{ secrets.POSTGRES_PORT }}
             export DB_USER=${{ secrets.DB_USER }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             export DB_NAME=${{ secrets.DB_NAME }}
