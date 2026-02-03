@@ -1,18 +1,15 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
-import uuid
-
 import logging
-import httpx
 import uuid
+from typing import Dict, Optional
+
+import httpx
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
 
+from src.tester.adapter import settings
 from src.tester.agent import TesterAgent
 from src.tester.models import GameTurnResponse
-from src.tester.adapter import settings
+from src.tester.runner import IntegrationTestRunner
 
 # Setup logging to use uvicorn's logger configuration
 logger = logging.getLogger("uvicorn.error")
@@ -78,8 +75,6 @@ async def run_step(request: StepRequest):
         logger.error(f"Error during step: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-from src.tester.runner import IntegrationTestRunner
-
 class AutoTestRequest(BaseModel):
     session_id: Optional[str] = None
     max_turns: int = 3
@@ -114,6 +109,11 @@ async def health_check():
             results["gm_service"] = "unreachable"
             
     return results
+
+@app.get("/session/history/{session_id}")
+async def get_session_history(session_id: str):
+    if session_id not in agents:
+        raise HTTPException(status_code=404, detail="Session not found")
     agent = agents[session_id]
     return await agent.client.get_history(session_id)
 

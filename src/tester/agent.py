@@ -48,6 +48,33 @@ Instructions:
 """
         self.history.append(SystemMessage(content=system_prompt))
 
+    async def setup_session(self, concept: str = "A dark fantasy dungeon exploration") -> str:
+        # 1. Create Scenario (Scenario Service)
+        scenario_data = await self.client.create_scenario(concept)
+        scenario_id = scenario_data.get("scenario_id")
+        if not scenario_id:
+            raise ValueError(f"Failed to create scenario: {scenario_data}")
+        
+        # 2. Inject Scenario into State Manager via Scenario Service
+        # This returns the ID used by State Manager
+        inject_result = await self.client.inject_scenario(scenario_id)
+        
+        # Injection might return sm_id in different paths depending on service version
+        state_manager_scenario_id = inject_result.get("scenario_id") or \
+                                   inject_result.get("data", {}).get("scenario_id")
+        
+        if not state_manager_scenario_id:
+            # Fallback to scenario_id if inject doesn't return a new one
+            state_manager_scenario_id = scenario_id
+
+        # 3. Start Session (State Manager)
+        session_id = await self.client.start_session(state_manager_scenario_id)
+        if not session_id:
+            raise ValueError("Failed to obtain session_id from state-manager")
+
+        self.session_id = session_id
+        return session_id
+
     async def act(self, last_narrative: Optional[str] = None) -> str:
         if last_narrative:
             self.history.append(HumanMessage(content=f"GM Narrative: {last_narrative}\n\nWhat is your next action?"))

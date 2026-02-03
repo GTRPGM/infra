@@ -1,11 +1,10 @@
 from typing import Any, List, Optional
 import httpx
-import json
-from langchain_core.callbacks import AsyncCallbackManagerForLLMRun, CallbackManagerForLLMRun
+from langchain_core.callbacks import AsyncCallbackManagerForLLMRun
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage, ChatMessage as LCChatMessage, SystemMessage, HumanMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
-from pydantic import Field, SecretStr
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.tester.models import ChatCompletionRequest, ChatCompletionResponse, ChatMessage
@@ -14,6 +13,8 @@ class TesterSettings(BaseSettings):
     LLM_GATEWAY_URL: str = "http://localhost:18060"
     LLM_MODEL_NAME: str = "gemini-2.0-flash-lite"
     GM_URL: str = "http://localhost:18020"
+    SCENARIO_SERVICE_URL: str = "http://localhost:18040"
+    STATE_MANAGER_URL: str = "http://localhost:18030"
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

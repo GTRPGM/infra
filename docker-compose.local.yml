@@ -1,6 +1,7 @@
 services:
   postgres:
     build: ./db/postgres
+    shm_size: '1gb'
     restart: always
     ports:
       - "15432:5432"
@@ -8,6 +9,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=gtrpgm
+    volumes:
+      - ./db/postgres/initdb:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -57,8 +61,10 @@ services:
       SECRET_KEY: "absdefghijklmn"
 
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - platform-net
 
@@ -82,7 +88,8 @@ services:
       LLM_GATEWAY_HOST: llm-gateway
       LLM_GATEWAY_PORT: 8060
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - platform-net
 
@@ -99,7 +106,8 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: gtrpgm
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - platform-net
 
@@ -124,7 +132,8 @@ services:
       LLM_GATEWAY_HOST: llm-gateway
       LLM_GATEWAY_PORT: 8060
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - platform-net
 
@@ -151,8 +160,10 @@ services:
       GM_HOST: gm
       GM_PORT: 8020
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - platform-net
 

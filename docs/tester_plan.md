@@ -15,12 +15,13 @@
 - [x] 필수 의존성 설치: `fastapi`, `uvicorn`, `langchain-core`, `httpx`, `pydantic-settings`.
 
 ### 3.2 핵심 컴포넌트 개발 (`src/tester`)
-- **LLM 어댑터 (`src/tester/adapter.py`)**: `gm`의 `NarrativeChatModel`을 참고하여 `llm-gateway` 전용 LangChain 챗 모델 구현.
-- **게임 클라이언트 (`src/tester/client.py`)**: `gm` 서비스의 API를 호출하는 비동기 클라이언트 구현.
-- **테스터 에이전트 (`src/tester/agent.py`)**: 
+- [x] **LLM 어댑터 (`src/tester/adapter.py`)**: `gm`의 `NarrativeChatModel`을 참고하여 `llm-gateway` 전용 LangChain 챗 모델 구현. (포트 8060, 8020으로 조정 완료)
+- [x] **게임 클라이언트 (`src/tester/client.py`)**: `gm` 서비스의 API를 호출하는 비동기 클라이언트 구현.
+- [x] **테스터 에이전트 (`src/tester/agent.py`)**: 
     - `langchain-core`를 사용하여 게임 루프(관찰 -> 생각 -> 행동) 구현.
     - `gm/docs` 내의 문서를 참고하여 게임 규칙 및 목표 이해.
-- **FastAPI 서버 (`src/tester/main.py`)**: 에이전트 실행 및 테스트 시나리오 제어를 위한 엔드포인트 제공.
+- [x] **FastAPI 서버 (`src/tester/main.py`)**: 에이전트 실행 및 테스트 시나리오 제어를 위한 엔드포인트 제공. (중복 임포트 및 문법 오류 수정 완료)
+- [x] **통합 테스트 러너 (`src/tester/runner.py`)**: 자동 테스트 시나리오 실행 로직 구현.
 
 ### 3.4 실행 방법
 - 루트 디렉토리에서 아래 명령어로 테스터 API를 실행합니다.
@@ -29,6 +30,7 @@ uv run uvicorn src.tester.main:app --host 0.0.0.0 --port 8002 --reload
 ```
 
 ## 4. 일정
-- 1단계: LLM 어댑터 및 게임 클라이언트 구현.
-- 2단계: 에이전트 로직 및 프롬프트 구성.
-- 3단계: FastAPI 서버 통합 및 최종 테스트.
+- [x] 1단계: LLM 어댑터 및 게임 클라이언트 구현.
+- [x] 2단계: 에이전트 로직 및 프롬프트 구성.
+- [x] 3단계: FastAPI 서버 통합 및 최종 테스트.
+- [ ] 4단계: 실제 GM 서비스와의 연동 테스트 및 버그 수정.

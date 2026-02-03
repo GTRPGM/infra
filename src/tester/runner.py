@@ -4,9 +4,12 @@ import json
 from datetime import datetime
 from typing import List, Dict, Any
 from src.tester.agent import TesterAgent
-from src.tester.models import GameTurnResponse
 
-logger = logging.getLogger("uvicorn.error")
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("gtrpgm.tester")
 
 class IntegrationTestRunner:
     def __init__(self, session_id: str, max_turns: int = 5):
@@ -16,23 +19,31 @@ class IntegrationTestRunner:
         self.results: List[Dict[str, Any]] = []
 
     async def run_full_test(self) -> Dict[str, Any]:
-        logger.info(f"--- Starting Integration Test: {self.session_id} ---")
+        logger.info(f"--- Starting Integration Test ---")
         start_time = datetime.now()
         
         try:
+            # 0. Setup Session
+            logger.info("Setting up session (Scenario -> Injection -> Session Start)...")
+            self.session_id = await self.agent.setup_session()
+            logger.info(f"Session established: {self.session_id}")
+
             for turn in range(1, self.max_turns + 1):
-                logger.info(f"Turn {turn}/{self.max_turns} starting...")
+                print(f"\n{'='*20} Turn {turn} {'='*20}")
                 
                 # 1. Player Turn
                 action = await self.agent.act()
-                logger.info(f"[Player Action]: {action}")
+                print(f"\n[PLAYER]: {action}")
                 
                 player_result = await self.agent.run_step(user_action=action)
+                print(f"\n[GM (Narrative)]: {player_result.narrative}")
                 
                 # 2. NPC Turn
                 npc_result = None
                 try:
                     npc_result = await self.agent.run_npc_step()
+                    if npc_result and npc_result.narrative:
+                        print(f"\n[GM (NPC Turn)]: {npc_result.narrative}")
                 except Exception as e:
                     logger.warning(f"NPC turn failed: {e}")
 
