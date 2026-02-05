@@ -7,7 +7,10 @@ from unittest.mock import MagicMock
 # Usage: python dump_openapi.py <sys_path> <module_name> <app_attribute_name>
 
 if len(sys.argv) < 4:
-    print("Usage: python dump_openapi.py <sys_path> <module_name> <app_attribute_name>", file=sys.stderr)
+    print(
+        "Usage: python dump_openapi.py <sys_path> <module_name> <app_attribute_name>",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 target_path = sys.argv[1]
@@ -22,11 +25,11 @@ os.environ.setdefault("APP_ENV", "local")
 os.environ.setdefault("APP_PORT", "8000")
 os.environ.setdefault("WEB_PORT", "3000")
 os.environ.setdefault("REMOTE_HOST", "localhost")
-os.environ.setdefault("POSTGRES_USER", "postgres")
-os.environ.setdefault("POSTGRES_PASSWORD", "password")
-os.environ.setdefault("POSTGRES_DB", "db")
-os.environ.setdefault("POSTGRES_HOST", "localhost")
-os.environ.setdefault("POSTGRES_PORT", "5432")
+os.environ.setdefault("DB_USER", "postgres")
+os.environ.setdefault("DB_PASSWORD", "password")
+os.environ.setdefault("DB_DB", "db")
+os.environ.setdefault("DB_HOST", "localhost")
+os.environ.setdefault("DB_PORT", "5432")
 os.environ.setdefault("REDIS_HOST", "localhost")
 os.environ.setdefault("REDIS_PORT", "6379")
 os.environ.setdefault("OPENAI_API_KEY", "dummy")
@@ -57,10 +60,10 @@ try:
     # Attempt to import the module
     module = importlib.import_module(module_name)
     app = getattr(module, app_attr)
-    
+
     # Generate OpenAPI schema
     openapi_schema = app.openapi()
-    
+
     # Print to stdout
     print(json.dumps(openapi_schema, indent=2))
 

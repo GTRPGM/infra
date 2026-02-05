@@ -29,34 +29,37 @@ class TesterAgent:
 
         all_docs = "\n\n".join(docs_context)
         
-        system_prompt = f"""You are an expert TRPG tester agent. 
-Your mission is to test the GM Core system by playing the game as a player.
-You should try various actions to see how the system handles rules and scenarios.
+        system_prompt = f"""당신은 전문적인 TRPG 테스터 에이전트입니다.
+당신의 임무는 플레이어로서 게임에 참여하여 GM Core 시스템을 테스트하는 것입니다.
+시스템이 규칙과 시나리오를 어떻게 처리하는지 확인하기 위해 다양한 창의적이고 논리적인 행동을 시도해야 합니다.
 
-Key Principles from System Documentation:
-- Scenario constraints have higher priority than Rules.
-- Every state change happens via a single commit before the narrative is generated.
-- The game follows a turn-based structure (Player turn followed by NPC turn).
+시스템 문서의 핵심 원칙:
+- 시나리오 제약 사항은 규칙(Rule)보다 높은 우선순위를 가집니다.
+- 모든 상태 변화는 나레이션이 생성되기 전 단일 커밋을 통해 발생합니다.
+- 게임은 턴제 구조(플레이어 턴 후 NPC/나레이터 턴)를 따릅니다.
 
-System Documentation Context:
+시스템 문서 컨텍스트:
 {all_docs}
 
-Instructions:
-1. Observe the GM's narrative carefully.
-2. Formulate a creative and logical action as a player.
-3. Your output should be ONLY the natural language action text.
+지침:
+1. GM의 나레이션을 주의 깊게 관찰하고 문맥을 파악하세요.
+2. 플레이어 캐릭터로서 자연스럽고 창의적인 행동을 결정하세요.
+3. **반드시 한국어로만 답변하세요.**
+4. 출력은 오직 플레이어의 행동 텍스트(Natural Language Action)만 포함해야 합니다. 다른 설명은 생략하세요.
 """
         self.history.append(SystemMessage(content=system_prompt))
 
-    async def setup_session(self, concept: str = "A dark fantasy dungeon exploration") -> str:
+    async def setup_session(self, concept: str = "A dark fantasy dungeon exploration") -> tuple[str, dict]:
         # 1. Create Scenario (Scenario Service)
         scenario_data = await self.client.create_scenario(concept)
+        # Extract the nested 'data' if it exists (scenario-service usually wraps it)
+        actual_scenario = scenario_data.get("data", scenario_data)
         scenario_id = scenario_data.get("scenario_id")
+        
         if not scenario_id:
             raise ValueError(f"Failed to create scenario: {scenario_data}")
         
         # 2. Inject Scenario into State Manager via Scenario Service
-        # This returns the ID used by State Manager
         inject_result = await self.client.inject_scenario(scenario_id)
         
         # Injection might return sm_id in different paths depending on service version
@@ -64,7 +67,6 @@ Instructions:
                                    inject_result.get("data", {}).get("scenario_id")
         
         if not state_manager_scenario_id:
-            # Fallback to scenario_id if inject doesn't return a new one
             state_manager_scenario_id = scenario_id
 
         # 3. Start Session (State Manager)
@@ -73,17 +75,23 @@ Instructions:
             raise ValueError("Failed to obtain session_id from state-manager")
 
         self.session_id = session_id
-        return session_id
+        return session_id, actual_scenario
 
     async def act(self, last_narrative: Optional[str] = None) -> str:
         if last_narrative:
-            self.history.append(HumanMessage(content=f"GM Narrative: {last_narrative}\n\nWhat is your next action?"))
+            # GM의 나레이션을 히스토리에 추가
+            self.history.append(HumanMessage(content=f"GM 서술: {last_narrative}\n\n다음 행동은 무엇입니까?"))
         else:
-            self.history.append(HumanMessage(content="The game has started. What is your first action?"))
+            # 게임 시작 시 첫 행동 요청
+            self.history.append(HumanMessage(content="게임이 시작되었습니다. 당신의 첫 번째 행동은 무엇입니까?"))
 
+        # 전체 히스토리를 바탕으로 LLM 호출
         response = await self.llm.ainvoke(self.history)
         action_text = str(response.content)
+        
+        # 자신의 행동(AI 응답)을 히스토리에 추가
         self.history.append(response)
+        
         return action_text
 
     async def run_step(self, user_action: Optional[str] = None) -> GameTurnResponse:

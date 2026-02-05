@@ -1,0 +1,62 @@
+2026-02-04 18:11:37,442 - gtrpgm.tester - INFO - --- Starting Integration Test ---
+2026-02-04 18:11:37,442 - gtrpgm.tester - INFO - Setting up session (Scenario -> Injection -> Session Start)...
+2026-02-04 18:13:02,201 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/generation/pure "HTTP/1.1 201 Created"
+2026-02-04 18:13:02,269 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/manage/scenarios/da8e9fc5-8b0e-453e-969a-2f5a2ded1bc4/inject "HTTP/1.1 200 OK"
+2026-02-04 18:13:02,289 - httpx - INFO - HTTP Request: POST http://localhost:18030/state/session/start "HTTP/1.1 200 OK"
+2026-02-04 18:13:02,289 - gtrpgm.tester - INFO - Session established: 22db561f-ee32-42d4-a33a-733352e570dc
+2026-02-04 18:13:02,296 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/22db561f-ee32-42d4-a33a-733352e570dc "HTTP/1.1 200 OK"
+2026-02-04 18:13:02,299 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/c785df46-f45c-499d-a463-5d2f34672b7f "HTTP/1.1 200 OK"
+2026-02-04 18:13:02,301 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/22db561f-ee32-42d4-a33a-733352e570dc/npcs "HTTP/1.1 200 OK"
+2026-02-04 18:13:02,304 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/22db561f-ee32-42d4-a33a-733352e570dc/enemies "HTTP/1.1 200 OK"
+2026-02-04 18:13:02,307 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/22db561f-ee32-42d4-a33a-733352e570dc/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 18:13:03,216 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 18:13:14,533 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 18:13:14,534 - gtrpgm.tester - ERROR - Test failed at turn 1: 'GameTurnResponse' object has no attribute 'npc_turn'
+
+==================== SCENARIO MANIFEST ====================
+Title: 파라오의 저주
+Genre: fantasy | Difficulty: normal
+Summary: 플레이어는 고대 파라오의 무덤을 탐험하며, 저주를 풀고 잃어버린 유물을 찾아야 합니다. 무덤 안에서 해골 근위병과 조우하고, 잃어버린 탐험가를 만나 도움을 받거나 갈등을 겪을 수 있습니다. 최종적으로 무덤의 비밀을 풀고 유물을 획득하거나 저주를 해제하여 액트를 완료합니다.
+
+[Acts]: 1
+  - act-1: 잊혀진 사막의 무덤 (사막)
+
+[NPCs]: 3
+  - npc-1: 길 잃은 탐험가 (무덤에서 길을 잃고 공포에 질린 탐험가. 주인공에게 도움을 요청한다....)
+  - npc-2: 파라오의 영혼 (무덤에 갇힌 파라오의 영혼. 주인공에게 진실을 알려주려 한다....)
+  - npc-3: 해골 근위병 (파라오의 무덤을 지키는 해골 근위병. 살아있는 자들을 적으로 간주한다....)
+
+[Enemies]: 1
+  - enemy-1: 모래 골렘 (모래로 이루어진 골렘. 강력한 물리 공격을 구사하며, 모래 폭풍을 일으킨다....)
+
+[Sequences]: 7
+  - seq-1: 뜨거운 사막 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-2: 무덤 입구 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-3: 첫 번째 방 | NPCs:['npc-1'] | Enemies:[] | Items:['103']
+  - seq-4: 길 잃은 탐험가 | NPCs:['npc-1'] | Enemies:[] | Items:[]
+  - seq-5: 해골 근위병과의 전투 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-6: 파라오의 영혼 | NPCs:['npc-2'] | Enemies:[] | Items:['101']
+  - seq-7: 유물 획득 | NPCs:[] | Enemies:['enemy-1'] | Items:['102']
+===========================================================
+
+--- INITIAL STATE ---
+Session: Act(act-1), Seq(seq-1), Turn(0)
+Player: HP(None), MP(None), SAN(None)
+NPCs: None
+Enemies: None
+---------------------
+
+==================== Turn 1 ====================
+
+[PLAYER]: I examine the dusty old book on the table, carefully turning its brittle pages.
+
+
+[GM (Narrative)]: 성공! 낡은 책을 주의 깊게 살펴본 당신은 책의 내용 일부를 읽을 수 있었습니다.
+
+{
+  "session_id": "22db561f-ee32-42d4-a33a-733352e570dc",
+  "status": "failed",
+  "error": "'GameTurnResponse' object has no attribute 'npc_turn'",
+  "completed_turns": 0,
+  "details": []
+}

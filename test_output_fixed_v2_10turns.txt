@@ -1,0 +1,67 @@
+2026-02-04 17:59:19,981 - gtrpgm.tester - INFO - --- Starting Integration Test ---
+2026-02-04 17:59:19,981 - gtrpgm.tester - INFO - Setting up session (Scenario -> Injection -> Session Start)...
+2026-02-04 17:59:49,958 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/generation/pure "HTTP/1.1 201 Created"
+2026-02-04 17:59:50,287 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/manage/scenarios/38f1b1b3-19db-4501-b428-b24ff51db569/inject "HTTP/1.1 200 OK"
+2026-02-04 17:59:50,303 - httpx - INFO - HTTP Request: POST http://localhost:18030/state/session/start "HTTP/1.1 200 OK"
+2026-02-04 17:59:50,304 - gtrpgm.tester - INFO - Session established: c1941f9c-b2fc-44fd-b1b7-f4fee4583c1e
+2026-02-04 17:59:50,310 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/c1941f9c-b2fc-44fd-b1b7-f4fee4583c1e "HTTP/1.1 200 OK"
+2026-02-04 17:59:50,314 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/24d0f04d-df10-4d5f-85fb-6ad107b41022 "HTTP/1.1 200 OK"
+2026-02-04 17:59:50,316 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/c1941f9c-b2fc-44fd-b1b7-f4fee4583c1e/npcs "HTTP/1.1 200 OK"
+2026-02-04 17:59:50,318 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/c1941f9c-b2fc-44fd-b1b7-f4fee4583c1e/enemies "HTTP/1.1 200 OK"
+2026-02-04 17:59:50,321 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/c1941f9c-b2fc-44fd-b1b7-f4fee4583c1e/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 17:59:51,594 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 18:00:04,720 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 502 Bad Gateway"
+2026-02-04 18:00:04,721 - gtrpgm.tester - ERROR - Test failed at turn 1: {'detail': {'error_type': 'PipelineError', 'failed_node': 'generate_narrative', 'failed_service': 'LLMGateway', 'message': '', 'original_error': ''}}
+
+==================== SCENARIO MANIFEST ====================
+Title: 잊혀진 파라오의 무덤
+Genre: fantasy | Difficulty: normal
+Summary: 플레이어는 고대 파라오의 무덤을 탐험하며, 저주를 풀고 잊혀진 탐험가를 구출해야 합니다.
+
+[Acts]: 2
+  - act-1: 사막의 오아시스 (사막)
+  - act-2: 아케나톤의 무덤 (무덤 내부)
+
+[NPCs]: 2
+  - npc-1: 자말 (사막의 오아시스 마을의 현명한 촌장. 무덤에 대한 정보를 가지고 있으며, 여행자들을 돕는 ...)
+  - npc-2: 아멜리아 (무덤에 갇힌 잊혀진 탐험가. 무덤의 비밀을 알고 있지만, 저주에 걸려 고통스러워한다....)
+
+[Enemies]: 2
+  - enemy-1: 스켈레톤 가드 (무덤을 지키는 언데드 병사. 튼튼한 뼈 갑옷을 착용하고 있으며, 강력한 근접 공격을 구사한...)
+  - enemy-2: 미라 (저주에 걸린 미라. 썩은 붕대로 몸을 감싸고 있으며, 독 공격을 사용한다. 또한, 끔찍한 ...)
+
+[Sequences]: 6
+  - seq-1: 오아시스 마을 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-2: 모래 폭풍 지대 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-3: 고대 유적 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-4: 무덤 입구 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-5: 무덤 내부 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-6: 아멜리아의 방 | NPCs:[] | Enemies:[] | Items:['102', '103']
+===========================================================
+
+--- INITIAL STATE ---
+Session: Act(act-1), Seq(seq-1), Turn(0)
+Player: HP(None), MP(None), SAN(None)
+NPCs: None
+Enemies: None
+---------------------
+
+==================== Turn 1 ====================
+
+[PLAYER]: I carefully examine the dusty old map, tracing the faded lines with my finger, and then announce to the group, "I propose we head towards the Whispering Woods. I've heard rumors of a hidden shrine within, and perhaps some clues to our quest lie there."
+
+{
+  "session_id": "c1941f9c-b2fc-44fd-b1b7-f4fee4583c1e",
+  "status": "failed",
+  "error": {
+    "detail": {
+      "error_type": "PipelineError",
+      "failed_node": "generate_narrative",
+      "failed_service": "LLMGateway",
+      "message": "",
+      "original_error": ""
+    }
+  },
+  "completed_turns": 0,
+  "details": []
+}

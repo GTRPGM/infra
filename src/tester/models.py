@@ -32,5 +32,9 @@ class GameTurnResponse(BaseModel):
     turn_id: str
     narrative: str
     session_id: str
+    commit_id: Optional[str] = None
+    active_entity_id: Optional[str] = "player"
+    is_npc_turn: bool = False
     # GM can return more fields, but we focus on these
+    npc_turn: Optional["GameTurnResponse"] = None
     raw_response: Optional[Dict[str, Any]] = None

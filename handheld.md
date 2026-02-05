@@ -5,51 +5,51 @@
 ## 1. 아키텍처 및 인프라 (Architecture & Infra)
 
 ### 서비스 맵
-- GM (Port 18020): 게임 마스터링 엔진. LangGraph를 통해 룰 엔진, 시나리오 서비스, 상태 관리자를 오케스트레이션합니다.
-- State Manager (Port 18030): 세션, 플레이어, 인벤토리, NPC 등의 모든 동적 상태를 관리합니다.
-- Scenario Service (Port 18040): 시나리오 생성(LLM), 주입 및 마스터 데이터 관리를 담당합니다.
-- Rule Engine (Port 18050): 플레이어의 행동(Story)을 분석하여 성공/실패 여부와 상태 변화(Diff)를 계산합니다.
-- PostgreSQL (Port 15432): 데이터 지속성 계층. ag_catalog를 통한 그래프 구조와 일반 관계형 테이블을 병행 사용합니다.
+- **GM (Port 18020):** 게임 마스터링 엔진. LangGraph를 통해 룰 엔진, 시나리오 서비스, 상태 관리자를 오케스트레이션합니다.
+- **State Manager (Port 18030):** 세션, 플레이어, 인벤토리, NPC 등의 모든 동적 상태를 관리합니다. (PostgreSQL + Apache AGE)
+- **Scenario Service (Port 18040):** 시나리오 생성(LLM), 주입 및 마스터 데이터 검증을 담당합니다.
+- **Rule Engine (Port 18050):** 캐릭터의 행동(Story)을 분석하여 성공/실패 여부와 상태 변화(Diff)를 계산합니다.
+- **LLM Gateway (Port 18060):** 다양한 LLM 모델(Gemini, OpenAI 등)에 대한 통합 인터페이스를 제공합니다.
 
-### 통신 규칙
-- 모든 서비스 간 통신은 JSON 기반 REST API를 사용합니다.
-- 외부 노출 포트는 호스트에서 10000 + 컨테이너 내부 포트 형식을 따릅니다.
+## 2. 개발 상태 (Development Status) - 2026.02.05 Updated
 
-## 2. 개발 상태 (Development Status)
+### ✅ Done (완료된 작업)
+- **[Feature] 오프닝 브리핑 (Opening Narrative)**: 
+  - `POST /api/v1/game/summary` 엔드포인트 신설.
+  - 게임 시작/재개 시 플레이어 입력 없이 현재 상황(위치, NPC, 분위기)을 먼저 묘사하여 몰입감 조성 및 "기억 상실" 클리셰 방지.
+- **[Fix] 환각(Hallucination) 방지**: 
+  - 나레이터 프롬프트에 `World Snapshot`에 없는 장소/아이템 생성을 엄격히 금지하는 제약 추가. (없는 숲, 펜던트 생성 방지)
+- **[Fix] 데이터 무결성 & 흐름**:
+  - `scenario_id` 유실 버그 수정 (UUID가 LangGraph 컨텍스트를 타고 정확히 전달됨).
+  - `state-manager`의 아이템 조회 500 에러 및 DB 함수(`create_session`) 중복 정의 문제 해결.
+- **[UX] 서사적 묘사 강화**:
+  - 기계적인 "1. 공격 2. 대화" 선택지 제시를 금지하고, 소설과 같은 자연스러운 행동 유도 서술 적용.
+- **[Logic] 시나리오 트리거 & 비전투 판정 개선**:
+  - 시나리오 서비스가 전체 시퀀스 목록을 참조하여 정확한 장소 이동(Sequence Jump)을 판정하도록 개선.
+  - 시나리오 서비스가 비전투 상황(함정, 퍼즐 등)의 보상 및 상태 변화(`correction_diffs`)를 제안할 수 있도록 확장.
+- **[Data] 기본 아이템 지급 자동화**:
+  - 세션 생성 시 플레이어에게 횃불과 로프를 자동 지급하도록 `State Manager` 트리거 수정.
 
-### Done (역사적 기록)
-- 테스터 오케스트레이션 구현 (src.tester.agent).
-- 모든 ID 식별자 UUID(string) 통일.
-- PostgreSQL shm_size 1gb 설정.
-- GM RuleManagerHTTPClient ID 매핑 로직 추가 (Master ID -> Instance ID).
-- GM GameEngine 내 NPC/Enemy 엔티티 통합 처리.
-- State Manager npc 테이블 내 is_departed, departed_at 컬럼 추가 및 initdb 반영.
-- PostgreSQL pgdata 볼륨 매핑을 통한 데이터 영속성 확보.
-- 테스터 로거 명칭 변경 (uvicorn.error -> gtrpgm.tester).
-- Scenario Service ID 정규화 로직 추가 (언더바를 하이픈으로 자동 변환).
-- Scenario Service 그래프 조회 시 ID 문자열 변환 보장 로직 추가.
+### 🚧 In Progress / To Do (개선 필요)
+- **[UX] UI 연동 최적화**:
+  - `correction_diffs`가 발생했을 때 프론트엔드 UI에서 아이템 획득 알림 등이 자연스럽게 연출되도록 연동 데이터 보강.
+- **[Perf] 컨텍스트 요약(Summarization)**:
+  - 히스토리가 길어질 경우 슬라이딩 윈도우 외에 핵심 요약을 별도 레이어로 관리하여 LLM 기억력 보존.
 
-### In Progress
-- 통합 테스트 완주 (5턴 시나리오 성공 확인).
-- Scenario Service 404 에러 최종 수정 사항 반영 확인.
+## 3. 핵심 규칙 (Key Rules)
+- **객체지향 원칙**: Router와 Service는 클래스 기반 구현을 유지합니다.
+- **상태 관리**: GM은 상태를 직접 저장하지 않고, 매 턴 `State Manager`에서 조회(`fetch`)하고 계산된 결과만 반영(`commit`)합니다.
+- **컨텍스트 관리**: 히스토리 참조 시 무한 어펜드가 아닌 슬라이딩 윈도우(`limit=5`) 방식을 고수합니다.
+- **테스트**: 통합 테스트 시 `src.tester.runner`를 사용하며, 반드시 로그 파일을 생성하여 트래픽을 추적합니다.
 
-## 3. 핵심 복잡성 및 주의 사항 (Core Complexities)
+## 4. 실행 및 관리 가이드 (Usage Guide)
 
-### ID 정합성 문제
-- 서비스마다 ID 명명 규칙이 다름 (act_1 vs act-1). Scenario Service 진입 시 반드시 정규화 로직을 거쳐야 함.
-- entity_id (Master)와 state_entity_id (Instance)를 혼용하지 않도록 GM 레벨에서 매핑 테이블 관리 필수.
+### 통합 테스트 실행
+`uv` 환경을 사용하여 테스터를 실행하며, 실시간으로 한글 로그를 확인합니다.
+- **명령어**: `uv run python -m src.tester.runner [session_id] [max_turns]`
+- **결과 확인**: 콘솔 출력 및 `test_output_{timestamp}.log` 파일 생성.
 
-### 데이터 참조 전파
-- GM은 항상 State Manager의 snapshot을 최우선으로 참조하여 다음 단계(Act/Seq) ID를 결정해야 함.
-
-### 인프라 초기화 정합성
-- PostgreSQL initdb 스크립트(002-schema.sql)와 각 서비스의 초기화 SQL이 일치하지 않을 경우, IF NOT EXISTS 구문으로 인해 신규 컬럼이 누락되는 현상 발생 주의.
-
-## 4. 핵심 규칙 (Key Rules)
-
-### 세부 준수 사항
-- 마크다운 작성 시 이모지 사용 금지 및 엄격한 형식 준수.
-- 코드 내 주석은 라인별 출력 추적 시를 제외하고 사용 금지.
-- 모든 기능 수정 전 /docs에 계획 작성 및 업데이트.
-- 단위 코드마다 테스트 작성 필수.
-- 한국어 응답 원칙 및 영어 코드/문서화 원칙 준수.
+### 주요 엔드포인트
+- **오프닝/요약**: `POST /api/v1/game/summary` (body: `{"session_id": "..."}`)
+- **턴 진행**: `POST /api/v1/game/turn` (body: `{"session_id": "...", "content": "행동"}`)
+- **상태 조회**: `GET /state/session/{session_id}/sequence/details` (State Manager 직접 호출)

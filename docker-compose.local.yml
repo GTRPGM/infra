@@ -6,9 +6,9 @@ services:
     ports:
       - "15432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=gtrpgm
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_DB=gtrpgm
     volumes:
       - ./db/postgres/initdb:/docker-entrypoint-initdb.d
       - pgdata:/var/lib/postgresql/data
@@ -75,11 +75,11 @@ services:
       - "18020:8020"
     environment:
       PORT: 8020
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_SERVER: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: gtrpgm
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SERVER: postgres
+      DB_PORT: 5432
+      DB_DB: gtrpgm
       STATE_MANAGER_PORT: 8030
       SCENARIO_SERVICE_HOST: scenario-service
       SCENARIO_SERVICE_PORT: 8040
@@ -175,7 +175,7 @@ services:
     environment:
       PORT: 8060
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      OPEN_AI_API_KEY: ${OPEN_AI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     networks:
       - platform-net
 

@@ -1,0 +1,159 @@
+2026-02-04 20:44:18,315 - gtrpgm.tester - INFO - --- Starting Integration Test ---
+2026-02-04 20:44:18,315 - gtrpgm.tester - INFO - Setting up session (Scenario -> Injection -> Session Start)...
+2026-02-04 20:44:40,452 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/generation/pure "HTTP/1.1 201 Created"
+2026-02-04 20:44:40,493 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/manage/scenarios/e0f8ffe5-100b-43ea-b7c9-c66470874e23/inject "HTTP/1.1 200 OK"
+2026-02-04 20:44:40,505 - httpx - INFO - HTTP Request: POST http://localhost:18030/state/session/start "HTTP/1.1 200 OK"
+2026-02-04 20:44:40,505 - gtrpgm.tester - INFO - Session established: 147288c3-5ecc-44ea-949c-b234ed4b115c
+2026-02-04 20:44:40,512 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c "HTTP/1.1 200 OK"
+2026-02-04 20:44:40,515 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/fda4fc03-b7ca-44ff-8b95-acbdd3ee8105 "HTTP/1.1 200 OK"
+2026-02-04 20:44:40,517 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:44:40,519 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:44:40,522 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:44:41,690 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,604 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,612 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,615 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/fda4fc03-b7ca-44ff-8b95-acbdd3ee8105 "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,617 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,619 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,622 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:44:47,623 - gtrpgm.tester - INFO - Turn 1 completed successfully.
+2026-02-04 20:44:48,854 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,665 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,672 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,675 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/fda4fc03-b7ca-44ff-8b95-acbdd3ee8105 "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,678 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,680 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,683 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:44:55,683 - gtrpgm.tester - INFO - Turn 2 completed successfully.
+2026-02-04 20:44:56,687 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,859 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,867 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,870 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/fda4fc03-b7ca-44ff-8b95-acbdd3ee8105 "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,872 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,875 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,880 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/147288c3-5ecc-44ea-949c-b234ed4b115c/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:45:03,880 - gtrpgm.tester - INFO - Turn 3 completed successfully.
+2026-02-04 20:45:03,880 - gtrpgm.tester - INFO - --- Integration Test Completed in 45.565233s ---
+
+==================== SCENARIO MANIFEST ====================
+Title: 잊혀진 파라오의 무덤
+Genre: fantasy | Difficulty: normal
+Summary: 저주받은 파라오의 무덤에서 숨겨진 보물을 찾고, 무덤의 비밀을 파헤쳐 탈출하세요.
+
+[Acts]: 1
+  - act-1: 아케나톤의 무덤 (무덤 내부)
+
+[NPCs]: 1
+  - npc-1: 에드워드 (무덤에서 길을 잃은 젊은 탐험가. 겁이 많지만, 지도를 찾는 데 열정적이다. 파라오의 저주...)
+
+[Enemies]: 2
+  - enemy-1: 해골 경비병 (고대 무덤을 지키는 언데드 병사. 썩은 갑옷을 입고 있으며, 낡은 검으로 공격한다....)
+  - enemy-2: 파라오의 망령 (고대 파라오의 영혼이 깃든 강력한 망령. 강력한 마법 공격과 저주를 사용한다....)
+
+[Sequences]: 4
+  - seq-1: 입구 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-2: 첫 번째 방 | NPCs:[] | Enemies:['enemy-1'] | Items:[]
+  - seq-3: 에드워드의 조우 | NPCs:['npc-1'] | Enemies:[] | Items:['102']
+  - seq-4: 파라오의 방 | NPCs:[] | Enemies:['enemy-2'] | Items:['101', '103']
+===========================================================
+
+--- INITIAL STATE ---
+Session: Act(act-1), Seq(seq-1), Turn(0)
+  [Goal]: 무덤 내부로 진입
+  [Triggers]: ['poi_02']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: None
+Enemies: None
+Items: None
+---------------------
+
+==================== Turn 1 ====================
+
+[PLAYER]: I carefully examine the dusty old map, tracing the faded lines with my finger, and then ask the GM, "Can I tell where we are on this map, and what locations are marked?"
+
+
+[GM (Narrative)]: 당신은 조심스럽게 먼지 묻은 지도를 살피며 손가락으로 흐릿한 선을 따라갑니다. 지도는 무덤 내부의 복잡한 구조를 대략적으로 보여줍니다. 당신의 손가락은 '입구'에서 시작하여, 좁은 통로를 지나 '첫 번째 방', 그리고 '두 번째 방'을 거쳐, 마침내 무덤의 중심부인 '파라오의 방'으로 향하는 길을 가리킵니다. 당신은 지도를 통해 현재 위치를 파악하고, 앞으로 나아가야 할 방향을 어렴풋이 짐작합니다. 어둠 속에서 들려오는 기묘한 소리는 당신의 심장을 더욱 빠르게 뛰게 합니다.
+
+
+[GM (NPC Turn)]: No NPC action.
+
+--- STATE AFTER TURN 1 ---
+Session: Act(act-1), Seq(seq-1), Turn(1)
+  [Goal]: 무덤 내부로 진입
+  [Triggers]: ['poi_02']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: None
+Enemies: None
+Items: None
+--------------------------
+
+==================== Turn 2 ====================
+
+[PLAYER]: I cautiously approach the flickering torch on the wall, extending a hand to feel the heat radiating from it while also glancing around the dimly lit cavern for any immediate threats.
+
+
+[GM (Narrative)]: 당신은 주변을 경계하며 횃불을 조사합니다. 횃불의 열기가 당신의 손에 닿고, 주변을 살피지만 즉각적인 위협은 보이지 않습니다.
+
+당신은 벽에 걸린 횃불에 조심스럽게 다가가, 손을 뻗어 그 열기를 느껴봅니다. 동시에, 희미하게 빛나는 동굴 안을 둘러보며 즉각적인 위협이 있는지 살핍니다. 횃불의 불빛은 당신의 그림자를 길게 드리우고, 당신의 시야는 점차 어둠 속으로 뻗어 나갑니다. 어둠 속에서 무언가 움직이는 소리가 더욱 가까워지는 듯합니다. 당신은 이제 무덤 내부로 더 깊숙이 들어가야 합니다.
+
+
+[GM (NPC Turn)]: No NPC action.
+
+--- STATE AFTER TURN 2 ---
+Session: Act(act-1), Seq(seq-1), Turn(2)
+  [Goal]: 무덤 내부로 진입
+  [Triggers]: ['poi_02']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: None
+Enemies: None
+Items: None
+--------------------------
+
+==================== Turn 3 ====================
+
+[PLAYER]: I take a moment to survey the surroundings, looking for any obvious exits, potential dangers, or anything that might seem out of place.
+
+
+[GM (Narrative)]: 당신은 주변을 둘러봅니다. 특별한 출구나 위험은 아직 발견되지 않았지만, 무언가 심상치 않은 기운이 감도는 것을 느낄 수 있습니다. 당신은 무덤 입구에 서서 주변을 면밀히 살핍니다. 어둠 속에서 희미하게 빛나는 벽화, 바닥에 흩어진 모래, 그리고 멀리서 들려오는 기묘한 소리들이 당신의 시선을 사로잡습니다.
+
+
+[GM (NPC Turn)]: No NPC action.
+
+--- STATE AFTER TURN 3 ---
+Session: Act(act-1), Seq(seq-1), Turn(3)
+  [Goal]: 무덤 내부로 진입
+  [Triggers]: ['poi_02']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: None
+Enemies: None
+Items: None
+--------------------------
+{
+  "session_id": "147288c3-5ecc-44ea-949c-b234ed4b115c",
+  "status": "success",
+  "duration_seconds": 45.565233,
+  "total_turns": 3,
+  "details": [
+    {
+      "turn": 1,
+      "player_action": "I carefully examine the dusty old map, tracing the faded lines with my finger, and then ask the GM, \"Can I tell where we are on this map, and what locations are marked?\"\n",
+      "gm_narrative": "당신은 조심스럽게 먼지 묻은 지도를 살피며 손가락으로 흐릿한 선을 따라갑니다. 지도는 무덤 내부의 복잡한 구조를 대략적으로 보여줍니다. 당신의 손가락은 '입구'에서 시작하여, 좁은 통로를 지나 '첫 번째 방', 그리고 '두 번째 방'을 거쳐, 마침내 무덤의 중심부인 '파라오의 방'으로 향하는 길을 가리킵니다. 당신은 지도를 통해 현재 위치를 파악하고, 앞으로 나아가야 할 방향을 어렴풋이 짐작합니다. 어둠 속에서 들려오는 기묘한 소리는 당신의 심장을 더욱 빠르게 뛰게 합니다.\n",
+      "npc_narrative": null,
+      "status": "success"
+    },
+    {
+      "turn": 2,
+      "player_action": "I cautiously approach the flickering torch on the wall, extending a hand to feel the heat radiating from it while also glancing around the dimly lit cavern for any immediate threats.\n",
+      "gm_narrative": "당신은 주변을 경계하며 횃불을 조사합니다. 횃불의 열기가 당신의 손에 닿고, 주변을 살피지만 즉각적인 위협은 보이지 않습니다.\n\n당신은 벽에 걸린 횃불에 조심스럽게 다가가, 손을 뻗어 그 열기를 느껴봅니다. 동시에, 희미하게 빛나는 동굴 안을 둘러보며 즉각적인 위협이 있는지 살핍니다. 횃불의 불빛은 당신의 그림자를 길게 드리우고, 당신의 시야는 점차 어둠 속으로 뻗어 나갑니다. 어둠 속에서 무언가 움직이는 소리가 더욱 가까워지는 듯합니다. 당신은 이제 무덤 내부로 더 깊숙이 들어가야 합니다.\n",
+      "npc_narrative": null,
+      "status": "success"
+    },
+    {
+      "turn": 3,
+      "player_action": "I take a moment to survey the surroundings, looking for any obvious exits, potential dangers, or anything that might seem out of place.\n",
+      "gm_narrative": "당신은 주변을 둘러봅니다. 특별한 출구나 위험은 아직 발견되지 않았지만, 무언가 심상치 않은 기운이 감도는 것을 느낄 수 있습니다. 당신은 무덤 입구에 서서 주변을 면밀히 살핍니다. 어둠 속에서 희미하게 빛나는 벽화, 바닥에 흩어진 모래, 그리고 멀리서 들려오는 기묘한 소리들이 당신의 시선을 사로잡습니다.\n",
+      "npc_narrative": null,
+      "status": "success"
+    }
+  ]
+}
