@@ -40,5 +40,3 @@ tmp/
 .envrc
 *.code-workspace
 
-# Gemini related files
-.gemini/

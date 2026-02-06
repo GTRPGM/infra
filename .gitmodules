@@ -1,21 +1,21 @@
 [submodule "BE-router"]
-	path = BE-router
+	path = services/BE-router
 	url = git@github.com:GTRPGM/BE-router.git
 [submodule "gm"]
-	path = gm
+	path = services/gm
 	url = git@github.com:GTRPGM/gm.git
 [submodule "state-manager"]
-	path = state-manager
+	path = services/state-manager
 	url = git@github.com:GTRPGM/state-manager.git
 [submodule "rule-engine"]
-	path = rule-engine
+	path = services/rule-engine
 	url = git@github.com:GTRPGM/rule-engine.git
 [submodule "llm-gateway"]
-	path = llm-gateway
+	path = services/llm-gateway
 	url = git@github.com:GTRPGM/llm-gateway.git
 [submodule "WEB"]
-	path = WEB
+	path = services/WEB
 	url = git@github.com:GTRPGM/WEB.git
 [submodule "scenario-service"]
-	path = scenario-service
+	path = services/scenario-service
 	url = git@github.com:GTRPGM/scenario-service.git
