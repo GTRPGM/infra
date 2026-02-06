@@ -1,0 +1,197 @@
+2026-02-04 20:41:53,611 - gtrpgm.tester - INFO - --- Starting Integration Test ---
+2026-02-04 20:41:53,611 - gtrpgm.tester - INFO - Setting up session (Scenario -> Injection -> Session Start)...
+2026-02-04 20:42:22,222 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/generation/pure "HTTP/1.1 201 Created"
+2026-02-04 20:42:22,265 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/manage/scenarios/e2f2d500-12ba-4945-86f1-2a40e4b56746/inject "HTTP/1.1 200 OK"
+2026-02-04 20:42:22,277 - httpx - INFO - HTTP Request: POST http://localhost:18030/state/session/start "HTTP/1.1 200 OK"
+2026-02-04 20:42:22,278 - gtrpgm.tester - INFO - Session established: 81270c05-b6d1-4784-9924-a7367294914f
+2026-02-04 20:42:22,284 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f "HTTP/1.1 200 OK"
+2026-02-04 20:42:22,288 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/0f4457db-4c43-4ef9-9ddd-a38c6942a756 "HTTP/1.1 200 OK"
+2026-02-04 20:42:22,290 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:42:22,292 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:42:22,296 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:42:23,751 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,210 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,217 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,220 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/0f4457db-4c43-4ef9-9ddd-a38c6942a756 "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,223 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,225 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,229 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:42:34,229 - gtrpgm.tester - INFO - Turn 1 completed successfully.
+2026-02-04 20:42:35,492 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,050 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,058 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,062 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/0f4457db-4c43-4ef9-9ddd-a38c6942a756 "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,064 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,066 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,070 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:42:49,070 - gtrpgm.tester - INFO - Turn 2 completed successfully.
+2026-02-04 20:42:50,220 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:43:04,814 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+
+==================== SCENARIO MANIFEST ====================
+Title: 잊혀진 파라오의 무덤
+Genre: fantasy | Difficulty: normal
+Summary: 플레이어는 사막에서 고대 무덤의 단서를 찾고, 무덤 내부에서 함정과 언데드 경비병을 물리치며 실종된 탐험가를 구출해야 합니다. 무덤의 비밀을 밝히는 것이 최종 목표입니다.
+
+[Acts]: 2
+  - act-1: 사막의 오아시스 (사막)
+  - act-2: 파라오의 무덤 (무덤)
+
+[NPCs]: 2
+  - npc-1: 사막 상인 (사막을 오가는 상인. 물건을 팔고, 여행에 필요한 정보나 소문을 제공한다....)
+  - npc-2: 실종된 탐험가 (유령) (무덤에서 길을 잃고 죽어 유령이 된 탐험가. 생전의 기억을 간직하고 있으며, 무덤의 비밀을...)
+
+[Enemies]: 2
+  - enemy-1: 뼈 갑옷 경비병 (고대 무덤을 지키는 언데드 경비병. 튼튼한 뼈 갑옷으로 무장하고 있으며, 부러진 검에 취약...)
+  - enemy-2: 모래 폭풍 정령 (사막에서 모래 폭풍을 일으키는 정령. 강력한 마법 공격을 사용하며, 물리 공격에 약하다....)
+
+[Sequences]: 7
+  - seq-1: 사막의 만남 | NPCs:['npc-1'] | Enemies:['enemy-2'] | Items:[]
+  - seq-2: 오아시스 | NPCs:[] | Enemies:[] | Items:['101']
+  - seq-3: 무덤 입구 발견 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-4: 무덤 내부 | NPCs:['npc-2'] | Enemies:['enemy-1'] | Items:['102']
+  - seq-5: 함정 방 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-6: 뼈 갑옷 경비병과의 전투 | NPCs:[] | Enemies:['enemy-1'] | Items:[]
+  - seq-7: 무덤의 비밀 | NPCs:['npc-2'] | Enemies:[] | Items:['103']
+===========================================================
+
+--- INITIAL STATE ---
+Session: Act(act-1), Seq(seq-1), Turn(0)
+  [Goal]: 사막 상인을 만나 정보를 얻고, 오아시스를 발견한다.
+  [Triggers]: ['오아시스 도착', '사막 상인과의 대화 완료']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:30)
+Enemies: enemy-2(HP:60)
+Items: None
+---------------------
+
+==================== Turn 1 ====================
+
+[PLAYER]: I carefully examine the dusty old map, tracing the faded lines with my finger, and then announce, "I'll head towards the Whispering Woods, following the old trade route marked here."
+
+
+[GM (Narrative)]: 당신은 손가락으로 흐릿한 선을 따라 먼지 묻은 낡은 지도를 조심스럽게 살피고, "여기에 표시된 오래된 교역로를 따라 속삭이는 숲으로 향하겠어."라고 말합니다.
+
+
+[GM (NPC Turn)]: npc-1은 당신에게 "속삭이는 숲... 조심하게. 그곳은 예전부터 좋지 않은 소문이 끊이지 않는 곳이야."라고 경고합니다.
+
+
+--- STATE AFTER TURN 1 ---
+Session: Act(act-1), Seq(seq-1), Turn(2)
+  [Goal]: 사막 상인을 만나 정보를 얻고, 오아시스를 발견한다.
+  [Triggers]: ['오아시스 도착', '사막 상인과의 대화 완료']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:30)
+Enemies: enemy-2(HP:60)
+Items: None
+--------------------------
+
+==================== Turn 2 ====================
+
+[PLAYER]: I cautiously approach the entrance to the abandoned temple, peering into the shadows and saying, "I'll try to discern any traps or dangers before entering. I'll be looking for pressure plates, tripwires, or anything out of the ordinary."
+
+
+[GM (Narrative)]: 당신은 버려진 사원 입구의 그림자를 조심스럽게 살핍니다. 눈썰미가 발휘되어, 희미하게 가려진 압력판을 발견합니다. 
+
+
+[GM (NPC Turn)]: 당신의 눈은 날카롭습니다. 먼지 낀 사원 입구에서, 당신은 숨겨진 위험을 감지했습니다. 낡은 석재 바닥의 틈새와, 그 위에 내려앉은 먼지, 그리고 살짝 어긋난 돌 조각들은 당신의 의심을 더욱 굳게 만듭니다. 
+
+**당신은 지금 다음 선택을 할 수 있습니다:**
+
+1.  **사원 안으로 들어가기:** 함정을 무시하고, 혹은 조심하며 사원 안으로 발을 들입니다. 어둠 속에서 당신을 기다리는 것은 무엇일까요?
+2.  **함정을 해제하거나 우회하기:** 발견한 함정을 해제하거나, 다른 경로를 찾아 사원 안으로 진입합니다. 당신의 지혜와 기술이 시험대에 오를 것입니다.
+3.  **사원 주변을 탐색하기:** 사원 주변을 더 자세히 탐색하여 다른 단서를 찾거나, 숨겨진 입구를 발견합니다. 어쩌면 예상치 못한 정보를 얻을 수 있을지도 모릅니다.
+4.  **NPC-1과 대화하기:** NPC-1에게 사원에 대한 더 많은 정보를 묻거나, 그와 함께 행동할지 결정합니다. 그의 불안한 모습은 당신에게 어떤 영향을 미칠까요?
+5.  **포기하고 다른 곳으로 이동하기:** 위험을 감수하기보다는, 사원을 포기하고 다른 목표를 찾아 떠납니다. 
+ 
+**주변 환경 묘사:**
+
+*   **입구:** 굳게 닫힌 사원 입구는 낡고 칙칙합니다. 덩굴 식물들이 벽을 타고 올라가고 있으며, 몇몇 조각상은 풍화되어 형체를 알아보기 힘듭니다.
+*   **소리:** 미풍에 실려온 희미한 속삭임이 들려옵니다. 마치 사원 안에서 무언가가 당신을 부르는 듯한 느낌입니다.
+*   **냄새:** 눅눅한 흙 냄새와 곰팡이 냄새가 코를 찌릅니다. 오랫동안 방치된 곳 특유의 퀴퀴한 냄새입니다.
+
+**당신의 선택에 따라, 이야기는 새로운 국면을 맞이할 것입니다.**
+
+
+--- STATE AFTER TURN 2 ---
+Session: Act(act-1), Seq(seq-1), Turn(4)
+  [Goal]: 사막 상인을 만나 정보를 얻고, 오아시스를 발견한다.
+  [Triggers]: ['오아시스 도착', '사막 상인과의 대화 완료']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:30)
+Enemies: enemy-2(HP:60)
+Items: None
+--------------------------
+
+==================== Turn 3 ====================
+
+[PLAYER]: I reach into my pack, pull out a small, intricately carved wooden box, and say, "I open the box and examine its contents carefully, hoping to find a clue about our current situation or the location of the treasure."
+
+
+[GM (Narrative)]: 당신은 조심스럽게 나무 상자를 열어 내용물을 살핍니다. 상자 안에는 작은 지도 조각, 빛바랜 일기장, 그리고 낡은 나침반이 들어있습니다. 지도는 주변 지역의 대략적인 지형을 보여주는 듯하며, 일기장에는 알 수 없는 문자와 그림이 가득합니다. 나침반은 불안정하게 흔들리며 정확한 방향을 가리키지 못합니다. 이 물건들이 당신의 여정에 어떤 도움을 줄 수 있을지 고민하며, 당신은 다시 사막을 향합니다.
+
+
+[GM (NPC Turn)]: 당신의 날카로운 눈썰미는 위험을 감지했고, 당신의 직감은 이 낡은 사원이 단순한 폐허가 아님을 말해주고 있습니다. NPC-1의 불안한 모습은 당신의 경계심을 더욱 자극합니다. 그의 걱정스러운 눈빛은 당신의 결정을 기다리고 있습니다.
+
+**당신의 선택은 다음과 같습니다:**
+
+1.  **사원 안으로 들어가기:** 함정을 무시하거나 조심하며 사원 안으로 발을 들입니다. 어둠 속에서 당신을 기다리는 것은 무엇일까요? 혹시, 당신의 용기를 시험하는 보물이 있을지도 모릅니다.
+2.  **함정을 해제하거나 우회하기:** 발견한 함정을 해제하거나, 다른 경로를 찾아 사원 안으로 진입합니다. 당신의 지혜와 기술이 시험대에 오를 것입니다. 함정을 해제하기 위해선, 주변 환경을 면밀히 관찰하고, 당신의 기술을 활용해야 합니다.
+3.  **사원 주변을 탐색하기:** 사원 주변을 더 자세히 탐색하여 다른 단서를 찾거나, 숨겨진 입구를 발견합니다. 어쩌면 예상치 못한 정보를 얻을 수 있을지도 모릅니다. 사원 주변에는 낡은 조각상, 부서진 기둥, 그리고 희미하게 새겨진 문자들이 있을 수 있습니다.
+4.  **NPC-1과 대화하기:** NPC-1에게 사원에 대한 더 많은 정보를 묻거나, 그와 함께 행동할지 결정합니다. 그의 불안한 모습은 당신에게 어떤 영향을 미칠까요? 그가 알고 있는 정보가 당신에게 도움이 될 수도 있습니다.
+5.  **포기하고 다른 곳으로 이동하기:** 위험을 감수하기보다는, 사원을 포기하고 다른 목표를 찾아 떠납니다. 당신의 안전을 최우선으로 생각한다면, 현명한 선택일 수 있습니다.
+
+**주변 환경 묘사:**
+
+*   **입구:** 굳게 닫힌 사원 입구는 낡고 칙칙합니다. 덩굴 식물들이 벽을 타고 올라가고 있으며, 몇몇 조각상은 풍화되어 형체를 알아보기 힘듭니다. 입구 주변의 돌에는 미세한 균열이 보이며, 이는 함정의 일부일 수 있습니다.
+*   **소리:** 미풍에 실려온 희미한 속삭임이 들려옵니다. 마치 사원 안에서 무언가가 당신을 부르는 듯한 느낌입니다. 바람의 방향을 따라 소리가 더 크게 들리기도 합니다.
+*   **냄새:** 눅눅한 흙 냄새와 곰팡이 냄새가 코를 찌릅니다. 오랫동안 방치된 곳 특유의 퀴퀴한 냄새입니다. 냄새는 사원 내부에서 더 강하게 느껴집니다.
+
+**당신의 결정에 따라, 당신의 운명이 결정될 것입니다. 무엇을 선택하시겠습니까?**
+2026-02-04 20:43:04,822 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f "HTTP/1.1 200 OK"
+2026-02-04 20:43:04,826 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/0f4457db-4c43-4ef9-9ddd-a38c6942a756 "HTTP/1.1 200 OK"
+2026-02-04 20:43:04,828 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:43:04,831 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:43:04,837 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/81270c05-b6d1-4784-9924-a7367294914f/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:43:04,837 - gtrpgm.tester - INFO - Turn 3 completed successfully.
+2026-02-04 20:43:04,837 - gtrpgm.tester - INFO - --- Integration Test Completed in 71.225936s ---
+
+
+--- STATE AFTER TURN 3 ---
+Session: Act(act-1), Seq(seq-1), Turn(6)
+  [Goal]: 사막 상인을 만나 정보를 얻고, 오아시스를 발견한다.
+  [Triggers]: ['오아시스 도착', '사막 상인과의 대화 완료']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:30)
+Enemies: enemy-2(HP:60)
+Items: None
+--------------------------
+{
+  "session_id": "81270c05-b6d1-4784-9924-a7367294914f",
+  "status": "success",
+  "duration_seconds": 71.225936,
+  "total_turns": 3,
+  "details": [
+    {
+      "turn": 1,
+      "player_action": "I carefully examine the dusty old map, tracing the faded lines with my finger, and then announce, \"I'll head towards the Whispering Woods, following the old trade route marked here.\"\n",
+      "gm_narrative": "당신은 손가락으로 흐릿한 선을 따라 먼지 묻은 낡은 지도를 조심스럽게 살피고, \"여기에 표시된 오래된 교역로를 따라 속삭이는 숲으로 향하겠어.\"라고 말합니다.\n",
+      "npc_narrative": "npc-1은 당신에게 \"속삭이는 숲... 조심하게. 그곳은 예전부터 좋지 않은 소문이 끊이지 않는 곳이야.\"라고 경고합니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 2,
+      "player_action": "I cautiously approach the entrance to the abandoned temple, peering into the shadows and saying, \"I'll try to discern any traps or dangers before entering. I'll be looking for pressure plates, tripwires, or anything out of the ordinary.\"\n",
+      "gm_narrative": "당신은 버려진 사원 입구의 그림자를 조심스럽게 살핍니다. 눈썰미가 발휘되어, 희미하게 가려진 압력판을 발견합니다. \n",
+      "npc_narrative": "당신의 눈은 날카롭습니다. 먼지 낀 사원 입구에서, 당신은 숨겨진 위험을 감지했습니다. 낡은 석재 바닥의 틈새와, 그 위에 내려앉은 먼지, 그리고 살짝 어긋난 돌 조각들은 당신의 의심을 더욱 굳게 만듭니다. \n\n**당신은 지금 다음 선택을 할 수 있습니다:**\n\n1.  **사원 안으로 들어가기:** 함정을 무시하고, 혹은 조심하며 사원 안으로 발을 들입니다. 어둠 속에서 당신을 기다리는 것은 무엇일까요?\n2.  **함정을 해제하거나 우회하기:** 발견한 함정을 해제하거나, 다른 경로를 찾아 사원 안으로 진입합니다. 당신의 지혜와 기술이 시험대에 오를 것입니다.\n3.  **사원 주변을 탐색하기:** 사원 주변을 더 자세히 탐색하여 다른 단서를 찾거나, 숨겨진 입구를 발견합니다. 어쩌면 예상치 못한 정보를 얻을 수 있을지도 모릅니다.\n4.  **NPC-1과 대화하기:** NPC-1에게 사원에 대한 더 많은 정보를 묻거나, 그와 함께 행동할지 결정합니다. 그의 불안한 모습은 당신에게 어떤 영향을 미칠까요?\n5.  **포기하고 다른 곳으로 이동하기:** 위험을 감수하기보다는, 사원을 포기하고 다른 목표를 찾아 떠납니다. \n \n**주변 환경 묘사:**\n\n*   **입구:** 굳게 닫힌 사원 입구는 낡고 칙칙합니다. 덩굴 식물들이 벽을 타고 올라가고 있으며, 몇몇 조각상은 풍화되어 형체를 알아보기 힘듭니다.\n*   **소리:** 미풍에 실려온 희미한 속삭임이 들려옵니다. 마치 사원 안에서 무언가가 당신을 부르는 듯한 느낌입니다.\n*   **냄새:** 눅눅한 흙 냄새와 곰팡이 냄새가 코를 찌릅니다. 오랫동안 방치된 곳 특유의 퀴퀴한 냄새입니다.\n\n**당신의 선택에 따라, 이야기는 새로운 국면을 맞이할 것입니다.**\n",
+      "status": "success"
+    },
+    {
+      "turn": 3,
+      "player_action": "I reach into my pack, pull out a small, intricately carved wooden box, and say, \"I open the box and examine its contents carefully, hoping to find a clue about our current situation or the location of the treasure.\"\n",
+      "gm_narrative": "당신은 조심스럽게 나무 상자를 열어 내용물을 살핍니다. 상자 안에는 작은 지도 조각, 빛바랜 일기장, 그리고 낡은 나침반이 들어있습니다. 지도는 주변 지역의 대략적인 지형을 보여주는 듯하며, 일기장에는 알 수 없는 문자와 그림이 가득합니다. 나침반은 불안정하게 흔들리며 정확한 방향을 가리키지 못합니다. 이 물건들이 당신의 여정에 어떤 도움을 줄 수 있을지 고민하며, 당신은 다시 사막을 향합니다.\n",
+      "npc_narrative": "당신의 날카로운 눈썰미는 위험을 감지했고, 당신의 직감은 이 낡은 사원이 단순한 폐허가 아님을 말해주고 있습니다. NPC-1의 불안한 모습은 당신의 경계심을 더욱 자극합니다. 그의 걱정스러운 눈빛은 당신의 결정을 기다리고 있습니다.\n\n**당신의 선택은 다음과 같습니다:**\n\n1.  **사원 안으로 들어가기:** 함정을 무시하거나 조심하며 사원 안으로 발을 들입니다. 어둠 속에서 당신을 기다리는 것은 무엇일까요? 혹시, 당신의 용기를 시험하는 보물이 있을지도 모릅니다.\n2.  **함정을 해제하거나 우회하기:** 발견한 함정을 해제하거나, 다른 경로를 찾아 사원 안으로 진입합니다. 당신의 지혜와 기술이 시험대에 오를 것입니다. 함정을 해제하기 위해선, 주변 환경을 면밀히 관찰하고, 당신의 기술을 활용해야 합니다.\n3.  **사원 주변을 탐색하기:** 사원 주변을 더 자세히 탐색하여 다른 단서를 찾거나, 숨겨진 입구를 발견합니다. 어쩌면 예상치 못한 정보를 얻을 수 있을지도 모릅니다. 사원 주변에는 낡은 조각상, 부서진 기둥, 그리고 희미하게 새겨진 문자들이 있을 수 있습니다.\n4.  **NPC-1과 대화하기:** NPC-1에게 사원에 대한 더 많은 정보를 묻거나, 그와 함께 행동할지 결정합니다. 그의 불안한 모습은 당신에게 어떤 영향을 미칠까요? 그가 알고 있는 정보가 당신에게 도움이 될 수도 있습니다.\n5.  **포기하고 다른 곳으로 이동하기:** 위험을 감수하기보다는, 사원을 포기하고 다른 목표를 찾아 떠납니다. 당신의 안전을 최우선으로 생각한다면, 현명한 선택일 수 있습니다.\n\n**주변 환경 묘사:**\n\n*   **입구:** 굳게 닫힌 사원 입구는 낡고 칙칙합니다. 덩굴 식물들이 벽을 타고 올라가고 있으며, 몇몇 조각상은 풍화되어 형체를 알아보기 힘듭니다. 입구 주변의 돌에는 미세한 균열이 보이며, 이는 함정의 일부일 수 있습니다.\n*   **소리:** 미풍에 실려온 희미한 속삭임이 들려옵니다. 마치 사원 안에서 무언가가 당신을 부르는 듯한 느낌입니다. 바람의 방향을 따라 소리가 더 크게 들리기도 합니다.\n*   **냄새:** 눅눅한 흙 냄새와 곰팡이 냄새가 코를 찌릅니다. 오랫동안 방치된 곳 특유의 퀴퀴한 냄새입니다. 냄새는 사원 내부에서 더 강하게 느껴집니다.\n\n**당신의 결정에 따라, 당신의 운명이 결정될 것입니다. 무엇을 선택하시겠습니까?**\n",
+      "status": "success"
+    }
+  ]
+}

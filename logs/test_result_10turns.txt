@@ -1,0 +1,431 @@
+2026-02-04 20:32:26,872 - gtrpgm.tester - INFO - --- Starting Integration Test ---
+2026-02-04 20:32:26,872 - gtrpgm.tester - INFO - Setting up session (Scenario -> Injection -> Session Start)...
+2026-02-04 20:32:54,659 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/generation/pure "HTTP/1.1 201 Created"
+2026-02-04 20:32:54,707 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/manage/scenarios/a41998ae-a20f-4cea-aed9-730cc97bd143/inject "HTTP/1.1 200 OK"
+2026-02-04 20:32:54,720 - httpx - INFO - HTTP Request: POST http://localhost:18030/state/session/start "HTTP/1.1 200 OK"
+2026-02-04 20:32:54,720 - gtrpgm.tester - INFO - Session established: b5755c79-5c1a-448c-ac76-878beadfe9f1
+2026-02-04 20:32:54,727 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:32:54,730 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:32:54,732 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:32:54,734 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:32:54,739 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:32:55,700 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,097 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,105 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,108 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,111 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,113 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,117 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:33:08,117 - gtrpgm.tester - INFO - Turn 1 completed successfully.
+2026-02-04 20:33:09,066 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,762 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,770 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,774 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,776 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,778 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,781 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:33:20,782 - gtrpgm.tester - INFO - Turn 2 completed successfully.
+2026-02-04 20:33:21,825 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:33:33,363 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+
+==================== SCENARIO MANIFEST ====================
+Title: 잊혀진 파라오의 무덤
+Genre: fantasy | Difficulty: normal
+Summary: 플레이어는 고대 파라오의 무덤에서 실종된 탐험가를 찾고, 저주를 풀기 위해 모험을 떠납니다. 함정과 몬스터를 헤쳐나가며 무덤의 비밀을 파헤치고, 최후의 결전을 벌여야 합니다.
+
+[Acts]: 2
+  - act-1: 사막의 오아시스 (오아시스 마을)
+  - act-2: 파라오의 무덤 (무덤 내부)
+
+[NPCs]: 3
+  - npc-1: 마을 촌장 (오아시스 마을의 촌장. 무덤에 얽힌 이야기를 알고 있으며, 주인공에게 조언을 해준다....)
+  - npc-2: 알렉스 (실종된 탐험가. 무덤 내부에서 조우하게 되며, 주인공에게 도움을 요청한다....)
+  - npc-3: 수호령 (무덤을 지키는 영혼. 주인공의 행동에 따라 적대하거나 협력할 수 있다....)
+
+[Enemies]: 2
+  - enemy-1: 해골 근위병 (무덤을 지키는 해골 병사. 낡은 갑옷과 검으로 무장하고 있다....)
+  - enemy-2: 미라 (저주에 걸린 미라. 썩은 붕대와 강력한 저주 공격을 사용한다....)
+
+[Sequences]: 7
+  - seq-1: 오아시스 마을 입구 | NPCs:['npc-1'] | Enemies:[] | Items:[]
+  - seq-2: 촌장의 집 | NPCs:['npc-1'] | Enemies:[] | Items:['101']
+  - seq-3: 무덤 입구 발견 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-4: 무덤 내부 - 첫 번째 방 | NPCs:[] | Enemies:['enemy-1'] | Items:['102']
+  - seq-5: 알렉스와의 조우 | NPCs:['npc-2'] | Enemies:[] | Items:[]
+  - seq-6: 미라와의 전투 | NPCs:[] | Enemies:['enemy-2'] | Items:['103']
+  - seq-7: 무덤 탈출 | NPCs:['npc-2'] | Enemies:[] | Items:[]
+===========================================================
+
+--- INITIAL STATE ---
+Session: Act(act-1), Seq(seq-1), Turn(0)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+---------------------
+
+==================== Turn 1 ====================
+
+[PLAYER]: I examine the dusty old book on the table, carefully turning its brittle pages.
+
+
+[GM (Narrative)]: 당신은 테이블 위의 먼지 덮인 낡은 책을 조심스럽게 살펴봅니다. 바스락거리는 소리와 함께 책장이 넘어가고, 오래된 종이 냄새가 당신의 코를 자극합니다. 책 속에서 무언가 중요한 단서를 발견할 것 같은 예감이 듭니다.
+
+
+[GM (NPC Turn)]: 낡은 책장을 조심스럽게 넘기는 당신의 손길에, 책은 마치 오랜 잠에서 깨어난 듯 미세한 먼지를 흩날립니다. 잉크가 번진 페이지 위로 기묘한 문양과 알 수 없는 언어들이 빼곡히 적혀 있어, 마치 고대 마법서나 비밀스러운 기록을 마주한 듯한 느낌입니다. 
+
+책의 깊숙한 곳, 당신의 시선을 사로잡는 것은 다름 아닌 **낡은 지도**입니다. 낡은 종이 위에 섬세하게 그려진 지도는 핏빛 잉크로 표시된 기이한 장소를 가리키고 있습니다. 지도의 가장자리에는 낡은 펜으로 적힌 작은 글씨가 희미하게 보입니다.
+
+당신은 이 지도와 글귀에 담긴 의미를 파악하기 위해, 다음 세 가지 선택지 중 하나를 선택할 수 있습니다.
+
+1.  **지도를 자세히 읽어본다:** 핏빛으로 물든 지형과 기호들이 무엇을 의미하는지, 그리고 낡은 펜으로 적힌 글귀가 무엇을 말하는지 알아내려 노력합니다.
+2.  **책의 다른 부분을 살펴본다:** 지도가 아닌 다른 페이지에서 단서를 찾기 위해, 책의 나머지 부분을 꼼꼼히 뒤져봅니다. 혹시 지도에 대한 힌트가 있을지도 모릅니다.
+3.  **주변 환경에 다시 한번 시선을 돌린다:** 책이 놓인 테이블, 방의 다른 물건들, 혹은 방 자체에 주목합니다. 혹시 이 책과 관련된 다른 단서가 숨겨져 있을지도 모릅니다.
+
+어떤 선택을 하시겠습니까?
+
+
+--- STATE AFTER TURN 1 ---
+Session: Act(act-1), Seq(seq-1), Turn(2)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 2 ====================
+
+[PLAYER]: I cautiously reach for the ornate, silver dagger resting on the velvet cushion.
+
+
+[GM (Narrative)]: 당신은 벨벳 쿠션 위에 놓인 화려한 은색 단검에 조심스럽게 손을 뻗습니다. 차가운 금속의 감촉이 손끝에 전해지고, 단검은 당신의 손에 쥐어집니다.
+
+
+[GM (NPC Turn)]: 당신의 손에는 차가운 은색 단검이 들려 있고, 눈 앞에는 핏빛 지도가 펼쳐진 낡은 책이 있습니다. 지도는 기이한 장소를 가리키고, 낡은 글씨는 그 의미를 알 수 없는 채 희미하게 적혀 있습니다.
+
+당신은 다음 세 가지 선택지 중 하나를 선택할 수 있습니다.
+
+1.  **지도를 자세히 읽어본다:** 핏빛으로 물든 지형과 기호들이 무엇을 의미하는지, 그리고 낡은 펜으로 적힌 글귀가 무엇을 말하는지 알아내려 노력합니다. 단검을 내려놓고 지도를 더 면밀히 관찰하면, 숨겨진 의미를 파악하는 데 도움이 될지도 모릅니다.
+2.  **책의 다른 부분을 살펴본다:** 지도가 아닌 다른 페이지에서 단서를 찾기 위해, 책의 나머지 부분을 꼼꼼히 뒤져봅니다. 혹시 지도에 대한 힌트가 있을지도 모릅니다. 단검을 든 채로 책장을 넘기면, 자칫 책을 훼손하거나 중요한 정보를 놓칠 수 있습니다.
+3.  **주변 환경에 다시 한번 시선을 돌린다:** 책이 놓인 테이블, 방의 다른 물건들, 혹은 방 자체에 주목합니다. 혹시 이 책과 관련된 다른 단서가 숨겨져 있을지도 모릅니다. 단검을 든 채 주변을 살피는 것은 경계심을 높여줄 수 있지만, 동시에 다른 위험을 감지하는 데 방해가 될 수도 있습니다.
+
+당신의 선택에 따라 이야기는 새로운 국면을 맞이할 것입니다. **어떤 선택을 하시겠습니까?**
+
+
+--- STATE AFTER TURN 2 ---
+Session: Act(act-1), Seq(seq-1), Turn(4)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 3 ====================
+
+[PLAYER]: I carefully scan the room, taking in every detail of the surroundings, looking for anything out of place or of immediate interest.
+
+
+[GM (Narrative)]: 당신은 방 안을 꼼꼼히 훑어봅니다. 낡은 책상 다리의 미세한 흠집, 벽에 걸린 그림 뒤의 그림자, 희미하게 빛나는 촛불의 그을음까지, 모든 것이 당신의 시야에 들어옵니다. 방 구석에서 **작은 열쇠**를 발견합니다.
+
+
+[GM (NPC Turn)]: 당신의 손에는 여전히 차가운 은색 단검이 들려있고, 눈 앞에는 핏빛 지도가 펼쳐진 낡은 책이 놓여 있습니다. 방 구석에서는 작은 열쇠가 발견되었죠.
+
+이제 당신은 세 가지 선택지 중 하나를 선택할 수 있습니다.
+
+1.  **지도를 자세히 읽어본다:** 핏빛으로 물든 지형과 기호들이 무엇을 의미하는지, 그리고 낡은 펜으로 적힌 글귀가 무엇을 말하는지 알아내려 노력합니다. 단검을 내려놓고 지도를 더 면밀히 관찰하면, 숨겨진 의미를 파악하는 데 도움이 될지도 모릅니다. 하지만 단검을 내려놓는 순간, 당신은 무방비 상태가 될 수 있습니다.
+2.  **책의 다른 부분을 살펴본다:** 지도가 아닌 다른 페이지에서 단서를 찾기 위해, 책의 나머지 부분을 꼼꼼히 뒤져봅니다. 혹시 지도에 대한 힌트가 있을지도 모릅니다. 단검을 든 채로 책장을 넘기면, 자칫 책을 훼손하거나 중요한 정보를 놓칠 수 있습니다.
+3.  **작은 열쇠에 주목한다:** 방 구석에서 발견한 작은 열쇠가 이 상황과 어떤 관련이 있는지 알아보기 위해 열쇠를 자세히 살펴봅니다. 열쇠는 어떤 문이나 상자를 열 수 있을지, 아니면 다른 단서가 숨겨져 있을지 모릅니다. 단검을 든 채 열쇠를 조심스럽게 다루는 것은 주의를 요합니다.
+
+**어떤 선택을 하시겠습니까?** 당신의 선택에 따라 이야기는 새로운 국면을 맞이할 것입니다.
+2026-02-04 20:33:33,372 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:33:33,375 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:33:33,377 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:33:33,379 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:33:33,386 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:33:33,386 - gtrpgm.tester - INFO - Turn 3 completed successfully.
+2026-02-04 20:33:34,399 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,625 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,633 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,638 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,640 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,642 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,647 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:33:45,647 - gtrpgm.tester - INFO - Turn 4 completed successfully.
+2026-02-04 20:33:46,741 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,975 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,982 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,986 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,990 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,993 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,997 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:33:56,997 - gtrpgm.tester - INFO - Turn 5 completed successfully.
+2026-02-04 20:33:58,151 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,696 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,703 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,707 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,709 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,711 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,715 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:34:07,715 - gtrpgm.tester - INFO - Turn 6 completed successfully.
+2026-02-04 20:34:08,657 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,762 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,771 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,775 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,777 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,779 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,783 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:34:18,783 - gtrpgm.tester - INFO - Turn 7 completed successfully.
+2026-02-04 20:34:19,761 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,227 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,235 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,239 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,242 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,244 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,248 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:34:30,248 - gtrpgm.tester - INFO - Turn 8 completed successfully.
+2026-02-04 20:34:31,224 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,978 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,986 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,989 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,991 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,993 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,997 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:34:40,997 - gtrpgm.tester - INFO - Turn 9 completed successfully.
+2026-02-04 20:34:41,933 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,902 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,910 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1 "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,913 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/07b0cb48-922c-4f90-bd92-2b381cec79f4 "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,916 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/npcs "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,918 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/enemies "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,921 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/b5755c79-5c1a-448c-ac76-878beadfe9f1/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 20:34:51,922 - gtrpgm.tester - INFO - Turn 10 completed successfully.
+2026-02-04 20:34:51,922 - gtrpgm.tester - INFO - --- Integration Test Completed in 145.050144s ---
+
+
+--- STATE AFTER TURN 3 ---
+Session: Act(act-1), Seq(seq-1), Turn(6)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 4 ====================
+
+[PLAYER]: I introduce myself to the other figures in the room and ask if they know why we are here.
+
+
+[GM (Narrative)]: 당신은 방 안의 다른 인물들에게 자신을 소개하고, 그들이 이곳에 왜 왔는지 묻습니다. 그들은 당신의 질문에 당황한 듯 서로를 쳐다보며, 어색한 침묵이 흐릅니다. 당신의 말에 누군가는 고개를 끄덕이며 동의하는 듯 보이지만, 아직 아무도 입을 열지 않습니다.
+
+[GM (NPC Turn)]: npc-1은 당신의 질문에 잠시 머뭇거리더니, 핏빛 지도를 가리키며 낮은 목소리로 "이 지도... 뭔가 중요한 단서를 숨기고 있는 것 같아."라고 말합니다. 그의 시선은 불안하게 흔들립니다.
+
+
+--- STATE AFTER TURN 4 ---
+Session: Act(act-1), Seq(seq-1), Turn(8)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 5 ====================
+
+[PLAYER]: I test the sturdiness of the wooden chair I'm sitting on, then lean back and try to look nonchalant.
+
+
+[GM (Narrative)]: 당신은 앉아있는 나무 의자의 튼튼함을 시험하듯 흔들어봅니다. 의자는 예상외로 튼튼하게 버티고, 당신은 편안하게 뒤로 기대 앉습니다.
+
+
+[GM (NPC Turn)]: npc-1은 당황한 기색으로 "저도... 잘 모르겠습니다."라고 말하며, 주머니에서 작은 열쇠를 꺼내 당신에게 보여줍니다. 그는 열쇠가 단서가 될지 묻지만, 그의 눈빛은 불안함으로 가득 차 있습니다.
+
+
+--- STATE AFTER TURN 5 ---
+Session: Act(act-1), Seq(seq-1), Turn(10)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 6 ====================
+
+[PLAYER]: I take a deep breath and slowly rise to my feet, attempting to get a better view of the entire room.
+
+
+[GM (Narrative)]: 당신은 깊게 숨을 들이쉬고 천천히 일어섭니다. 방 안의 전체적인 모습을 더 잘 보기 위해 시야를 확보하려 합니다.
+
+[GM (NPC Turn)]: npc-1은 열쇠를 뚫어지게 바라보며, 떨리는 목소리로 그것의 용도를 추측합니다. 그의 불안한 시선은 방 안의 다른 물건들을 스캔하듯 훑어갑니다.
+
+
+--- STATE AFTER TURN 6 ---
+Session: Act(act-1), Seq(seq-1), Turn(12)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 7 ====================
+
+[PLAYER]: I reach out and touch the cold, metallic surface of the strange device in the center of the room.
+
+
+[GM (Narrative)]: 당신은 방 중앙에 있는 기묘한 장치에 손을 뻗어 차가운 금속 표면을 만집니다. 순간, 장치에서 미세한 떨림과 함께 희미한 빛이 뿜어져 나옵니다.
+
+
+[GM (NPC Turn)]: npc-1은 당신이 장치를 만지자마자 뒷걸음질 치며, 공포에 질린 목소리로 그것의 정체를 묻습니다.
+
+
+--- STATE AFTER TURN 7 ---
+Session: Act(act-1), Seq(seq-1), Turn(14)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 8 ====================
+
+[PLAYER]: I carefully check my pockets for any useful items, making a mental note of what I have.
+
+
+[GM (Narrative)]: 당신은 소지품을 꼼꼼히 확인합니다. 주머니 속에는 작은 열쇠, 그리고… 당신의 기억 속에 남아있는 몇 가지 단서들이 있음을 깨닫습니다.
+
+
+[GM (NPC Turn)]: npc-1은 당신의 시선을 따라 불안하게 장치를 바라보며, 자신의 기억 상실을 이야기합니다. 그는 열쇠를 꽉 쥐고 주변을 경계하며, 당신에게 협력할 의사를 내비칩니다. 그의 당신에 대한 호감도가 상승합니다.
+
+
+--- STATE AFTER TURN 8 ---
+Session: Act(act-1), Seq(seq-1), Turn(16)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 9 ====================
+
+[PLAYER]: I focus my gaze on the flickering candlelight, trying to discern any hidden meanings in the shadows it casts.
+
+
+[GM (Narrative)]: 당신은 촛불의 흔들림을 따라 시선을 움직입니다. 그림자가 춤을 추듯 움직이며, 그 속에 숨겨진 의미를 찾으려 애씁니다. 잠시 후, 촛불의 빛이 당신의 눈을 간지럽히고, 미세한 두통이 느껴집니다.
+
+
+[GM (NPC Turn)]: npc-1은 촛불을 쳐다보며 머리가 아프다고 말하며, 불안한 눈빛으로 당신을 쳐다봅니다. 당신에 대한 npc-1의 호감도가 소폭 상승합니다.
+
+
+--- STATE AFTER TURN 9 ---
+Session: Act(act-1), Seq(seq-1), Turn(18)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+--------------------------
+
+==================== Turn 10 ====================
+
+[PLAYER]: I cautiously approach the largest window in the room and peer outside, trying to get a sense of our location.
+
+
+[GM (Narrative)]: 당신은 방 안의 가장 큰 창문으로 조심스럽게 다가가 밖을 내다봅니다. 창밖 풍경은 짙은 안개로 뒤덮여 있어, 당신은 현재 위치에 대한 뚜렷한 단서를 얻지 못합니다.
+
+
+[GM (NPC Turn)]: npc-1은 문 밖에서 소리가 들린 것 같다고 당신에게 조심스럽게 묻습니다. 그의 불안한 눈빛은 더욱 흔들리고, 당신에 대한 호감도가 상승합니다.
+
+
+--- STATE AFTER TURN 10 ---
+Session: Act(act-1), Seq(seq-1), Turn(20)
+  [Goal]: 촌장을 만나 알렉스에 대한 정보를 얻는다.
+  [Triggers]: ['poi_1_2']
+Player: HP(100), MP(50), SAN(10), Gold(0)
+NPCs: npc-1(HP:50)
+Enemies: None
+---------------------------
+{
+  "session_id": "b5755c79-5c1a-448c-ac76-878beadfe9f1",
+  "status": "success",
+  "duration_seconds": 145.050144,
+  "total_turns": 10,
+  "details": [
+    {
+      "turn": 1,
+      "player_action": "I examine the dusty old book on the table, carefully turning its brittle pages.\n",
+      "gm_narrative": "당신은 테이블 위의 먼지 덮인 낡은 책을 조심스럽게 살펴봅니다. 바스락거리는 소리와 함께 책장이 넘어가고, 오래된 종이 냄새가 당신의 코를 자극합니다. 책 속에서 무언가 중요한 단서를 발견할 것 같은 예감이 듭니다.\n",
+      "npc_narrative": "낡은 책장을 조심스럽게 넘기는 당신의 손길에, 책은 마치 오랜 잠에서 깨어난 듯 미세한 먼지를 흩날립니다. 잉크가 번진 페이지 위로 기묘한 문양과 알 수 없는 언어들이 빼곡히 적혀 있어, 마치 고대 마법서나 비밀스러운 기록을 마주한 듯한 느낌입니다. \n\n책의 깊숙한 곳, 당신의 시선을 사로잡는 것은 다름 아닌 **낡은 지도**입니다. 낡은 종이 위에 섬세하게 그려진 지도는 핏빛 잉크로 표시된 기이한 장소를 가리키고 있습니다. 지도의 가장자리에는 낡은 펜으로 적힌 작은 글씨가 희미하게 보입니다.\n\n당신은 이 지도와 글귀에 담긴 의미를 파악하기 위해, 다음 세 가지 선택지 중 하나를 선택할 수 있습니다.\n\n1.  **지도를 자세히 읽어본다:** 핏빛으로 물든 지형과 기호들이 무엇을 의미하는지, 그리고 낡은 펜으로 적힌 글귀가 무엇을 말하는지 알아내려 노력합니다.\n2.  **책의 다른 부분을 살펴본다:** 지도가 아닌 다른 페이지에서 단서를 찾기 위해, 책의 나머지 부분을 꼼꼼히 뒤져봅니다. 혹시 지도에 대한 힌트가 있을지도 모릅니다.\n3.  **주변 환경에 다시 한번 시선을 돌린다:** 책이 놓인 테이블, 방의 다른 물건들, 혹은 방 자체에 주목합니다. 혹시 이 책과 관련된 다른 단서가 숨겨져 있을지도 모릅니다.\n\n어떤 선택을 하시겠습니까?\n",
+      "status": "success"
+    },
+    {
+      "turn": 2,
+      "player_action": "I cautiously reach for the ornate, silver dagger resting on the velvet cushion.\n",
+      "gm_narrative": "당신은 벨벳 쿠션 위에 놓인 화려한 은색 단검에 조심스럽게 손을 뻗습니다. 차가운 금속의 감촉이 손끝에 전해지고, 단검은 당신의 손에 쥐어집니다.\n",
+      "npc_narrative": "당신의 손에는 차가운 은색 단검이 들려 있고, 눈 앞에는 핏빛 지도가 펼쳐진 낡은 책이 있습니다. 지도는 기이한 장소를 가리키고, 낡은 글씨는 그 의미를 알 수 없는 채 희미하게 적혀 있습니다.\n\n당신은 다음 세 가지 선택지 중 하나를 선택할 수 있습니다.\n\n1.  **지도를 자세히 읽어본다:** 핏빛으로 물든 지형과 기호들이 무엇을 의미하는지, 그리고 낡은 펜으로 적힌 글귀가 무엇을 말하는지 알아내려 노력합니다. 단검을 내려놓고 지도를 더 면밀히 관찰하면, 숨겨진 의미를 파악하는 데 도움이 될지도 모릅니다.\n2.  **책의 다른 부분을 살펴본다:** 지도가 아닌 다른 페이지에서 단서를 찾기 위해, 책의 나머지 부분을 꼼꼼히 뒤져봅니다. 혹시 지도에 대한 힌트가 있을지도 모릅니다. 단검을 든 채로 책장을 넘기면, 자칫 책을 훼손하거나 중요한 정보를 놓칠 수 있습니다.\n3.  **주변 환경에 다시 한번 시선을 돌린다:** 책이 놓인 테이블, 방의 다른 물건들, 혹은 방 자체에 주목합니다. 혹시 이 책과 관련된 다른 단서가 숨겨져 있을지도 모릅니다. 단검을 든 채 주변을 살피는 것은 경계심을 높여줄 수 있지만, 동시에 다른 위험을 감지하는 데 방해가 될 수도 있습니다.\n\n당신의 선택에 따라 이야기는 새로운 국면을 맞이할 것입니다. **어떤 선택을 하시겠습니까?**\n",
+      "status": "success"
+    },
+    {
+      "turn": 3,
+      "player_action": "I carefully scan the room, taking in every detail of the surroundings, looking for anything out of place or of immediate interest.\n",
+      "gm_narrative": "당신은 방 안을 꼼꼼히 훑어봅니다. 낡은 책상 다리의 미세한 흠집, 벽에 걸린 그림 뒤의 그림자, 희미하게 빛나는 촛불의 그을음까지, 모든 것이 당신의 시야에 들어옵니다. 방 구석에서 **작은 열쇠**를 발견합니다.\n",
+      "npc_narrative": "당신의 손에는 여전히 차가운 은색 단검이 들려있고, 눈 앞에는 핏빛 지도가 펼쳐진 낡은 책이 놓여 있습니다. 방 구석에서는 작은 열쇠가 발견되었죠.\n\n이제 당신은 세 가지 선택지 중 하나를 선택할 수 있습니다.\n\n1.  **지도를 자세히 읽어본다:** 핏빛으로 물든 지형과 기호들이 무엇을 의미하는지, 그리고 낡은 펜으로 적힌 글귀가 무엇을 말하는지 알아내려 노력합니다. 단검을 내려놓고 지도를 더 면밀히 관찰하면, 숨겨진 의미를 파악하는 데 도움이 될지도 모릅니다. 하지만 단검을 내려놓는 순간, 당신은 무방비 상태가 될 수 있습니다.\n2.  **책의 다른 부분을 살펴본다:** 지도가 아닌 다른 페이지에서 단서를 찾기 위해, 책의 나머지 부분을 꼼꼼히 뒤져봅니다. 혹시 지도에 대한 힌트가 있을지도 모릅니다. 단검을 든 채로 책장을 넘기면, 자칫 책을 훼손하거나 중요한 정보를 놓칠 수 있습니다.\n3.  **작은 열쇠에 주목한다:** 방 구석에서 발견한 작은 열쇠가 이 상황과 어떤 관련이 있는지 알아보기 위해 열쇠를 자세히 살펴봅니다. 열쇠는 어떤 문이나 상자를 열 수 있을지, 아니면 다른 단서가 숨겨져 있을지 모릅니다. 단검을 든 채 열쇠를 조심스럽게 다루는 것은 주의를 요합니다.\n\n**어떤 선택을 하시겠습니까?** 당신의 선택에 따라 이야기는 새로운 국면을 맞이할 것입니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 4,
+      "player_action": "I introduce myself to the other figures in the room and ask if they know why we are here.\n",
+      "gm_narrative": "당신은 방 안의 다른 인물들에게 자신을 소개하고, 그들이 이곳에 왜 왔는지 묻습니다. 그들은 당신의 질문에 당황한 듯 서로를 쳐다보며, 어색한 침묵이 흐릅니다. 당신의 말에 누군가는 고개를 끄덕이며 동의하는 듯 보이지만, 아직 아무도 입을 열지 않습니다.",
+      "npc_narrative": "npc-1은 당신의 질문에 잠시 머뭇거리더니, 핏빛 지도를 가리키며 낮은 목소리로 \"이 지도... 뭔가 중요한 단서를 숨기고 있는 것 같아.\"라고 말합니다. 그의 시선은 불안하게 흔들립니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 5,
+      "player_action": "I test the sturdiness of the wooden chair I'm sitting on, then lean back and try to look nonchalant.\n",
+      "gm_narrative": "당신은 앉아있는 나무 의자의 튼튼함을 시험하듯 흔들어봅니다. 의자는 예상외로 튼튼하게 버티고, 당신은 편안하게 뒤로 기대 앉습니다.\n",
+      "npc_narrative": "npc-1은 당황한 기색으로 \"저도... 잘 모르겠습니다.\"라고 말하며, 주머니에서 작은 열쇠를 꺼내 당신에게 보여줍니다. 그는 열쇠가 단서가 될지 묻지만, 그의 눈빛은 불안함으로 가득 차 있습니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 6,
+      "player_action": "I take a deep breath and slowly rise to my feet, attempting to get a better view of the entire room.\n",
+      "gm_narrative": "당신은 깊게 숨을 들이쉬고 천천히 일어섭니다. 방 안의 전체적인 모습을 더 잘 보기 위해 시야를 확보하려 합니다.",
+      "npc_narrative": "npc-1은 열쇠를 뚫어지게 바라보며, 떨리는 목소리로 그것의 용도를 추측합니다. 그의 불안한 시선은 방 안의 다른 물건들을 스캔하듯 훑어갑니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 7,
+      "player_action": "I reach out and touch the cold, metallic surface of the strange device in the center of the room.\n",
+      "gm_narrative": "당신은 방 중앙에 있는 기묘한 장치에 손을 뻗어 차가운 금속 표면을 만집니다. 순간, 장치에서 미세한 떨림과 함께 희미한 빛이 뿜어져 나옵니다.\n",
+      "npc_narrative": "npc-1은 당신이 장치를 만지자마자 뒷걸음질 치며, 공포에 질린 목소리로 그것의 정체를 묻습니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 8,
+      "player_action": "I carefully check my pockets for any useful items, making a mental note of what I have.\n",
+      "gm_narrative": "당신은 소지품을 꼼꼼히 확인합니다. 주머니 속에는 작은 열쇠, 그리고… 당신의 기억 속에 남아있는 몇 가지 단서들이 있음을 깨닫습니다.\n",
+      "npc_narrative": "npc-1은 당신의 시선을 따라 불안하게 장치를 바라보며, 자신의 기억 상실을 이야기합니다. 그는 열쇠를 꽉 쥐고 주변을 경계하며, 당신에게 협력할 의사를 내비칩니다. 그의 당신에 대한 호감도가 상승합니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 9,
+      "player_action": "I focus my gaze on the flickering candlelight, trying to discern any hidden meanings in the shadows it casts.\n",
+      "gm_narrative": "당신은 촛불의 흔들림을 따라 시선을 움직입니다. 그림자가 춤을 추듯 움직이며, 그 속에 숨겨진 의미를 찾으려 애씁니다. 잠시 후, 촛불의 빛이 당신의 눈을 간지럽히고, 미세한 두통이 느껴집니다.\n",
+      "npc_narrative": "npc-1은 촛불을 쳐다보며 머리가 아프다고 말하며, 불안한 눈빛으로 당신을 쳐다봅니다. 당신에 대한 npc-1의 호감도가 소폭 상승합니다.\n",
+      "status": "success"
+    },
+    {
+      "turn": 10,
+      "player_action": "I cautiously approach the largest window in the room and peer outside, trying to get a sense of our location.\n",
+      "gm_narrative": "당신은 방 안의 가장 큰 창문으로 조심스럽게 다가가 밖을 내다봅니다. 창밖 풍경은 짙은 안개로 뒤덮여 있어, 당신은 현재 위치에 대한 뚜렷한 단서를 얻지 못합니다.\n",
+      "npc_narrative": "npc-1은 문 밖에서 소리가 들린 것 같다고 당신에게 조심스럽게 묻습니다. 그의 불안한 눈빛은 더욱 흔들리고, 당신에 대한 호감도가 상승합니다.\n",
+      "status": "success"
+    }
+  ]
+}

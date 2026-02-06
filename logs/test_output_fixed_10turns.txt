@@ -1,0 +1,68 @@
+2026-02-04 17:49:25,372 - gtrpgm.tester - INFO - --- Starting Integration Test ---
+2026-02-04 17:49:25,372 - gtrpgm.tester - INFO - Setting up session (Scenario -> Injection -> Session Start)...
+2026-02-04 17:49:56,671 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/generation/pure "HTTP/1.1 201 Created"
+2026-02-04 17:49:57,027 - httpx - INFO - HTTP Request: POST http://localhost:18040/api/v1/manage/scenarios/934255f8-76ce-42fb-84e1-c5a957669fed/inject "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,045 - httpx - INFO - HTTP Request: POST http://localhost:18030/state/session/start "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,046 - gtrpgm.tester - INFO - Session established: ebf4f0c4-d85a-403c-a1ba-65f1fa02d029
+2026-02-04 17:49:57,053 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/ebf4f0c4-d85a-403c-a1ba-65f1fa02d029 "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,056 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/player/33f56856-a64d-4835-b561-e08734acdb7b "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,059 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/ebf4f0c4-d85a-403c-a1ba-65f1fa02d029/npcs "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,061 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/ebf4f0c4-d85a-403c-a1ba-65f1fa02d029/enemies "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,070 - httpx - INFO - HTTP Request: GET http://localhost:18030/state/session/ebf4f0c4-d85a-403c-a1ba-65f1fa02d029/sequence/details "HTTP/1.1 200 OK"
+2026-02-04 17:49:57,941 - httpx - INFO - HTTP Request: POST http://localhost:18060/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-04 17:50:00,583 - httpx - INFO - HTTP Request: POST http://localhost:18020/api/v1/game/turn "HTTP/1.1 502 Bad Gateway"
+2026-02-04 17:50:00,583 - gtrpgm.tester - ERROR - Test failed at turn 1: {'detail': {'error_type': 'PipelineError', 'failed_node': 'generate_narrative', 'failed_service': 'LLMGateway', 'message': "name 'chain' is not defined", 'original_error': "name 'chain' is not defined"}}
+
+==================== SCENARIO MANIFEST ====================
+Title: 잊혀진 파라오의 무덤
+Genre: fantasy | Difficulty: normal
+Summary: 플레이어는 사막 오아시스에서 시작하여 고대 파라오의 저주받은 무덤을 탐험합니다. 무덤의 비밀을 파헤치고, 숨겨진 보물을 찾거나, 갇힌 탐험가를 구출해야 합니다.
+
+[Acts]: 2
+  - act-1: 사막의 오아시스 (알-카르마 오아시스)
+  - act-2: 파라오의 지하 묘실 (카르마 파라오의 묘실)
+
+[NPCs]: 2
+  - npc-1: 알렉스 (무덤에서 길을 잃은 탐험가. 지식과 정보를 가지고 있지만, 쇠약해져 있습니다. 탐험에 대한...)
+  - npc-2: 사라 (알렉스를 찾기 위해 온 탐험가. 강인하고, 전투 능력이 뛰어나며, 목표를 향한 굳은 의지를...)
+
+[Enemies]: 2
+  - enemy-1: 스켈레톤 가드 (무덤을 지키는 해골 병사. 낡은 갑옷과 검으로 무장하고 있으며, 끈질긴 생명력으로 공격해 ...)
+  - enemy-2: 저주받은 미라 (저주에 의해 부활한 미라. 썩은 붕대로 감싸여 있으며, 강력한 마법 공격을 구사합니다. 정...)
+
+[Sequences]: 7
+  - seq-1: 사막의 조우 | NPCs:['npc-1'] | Enemies:[] | Items:[]
+  - seq-2: 모래 폭풍의 흔적 | NPCs:[] | Enemies:['enemy-1'] | Items:['102']
+  - seq-3: 무덤 입구 발견 | NPCs:['npc-1'] | Enemies:[] | Items:[]
+  - seq-4: 묘실 입구 | NPCs:[] | Enemies:['enemy-2'] | Items:['101', '103']
+  - seq-5: 함정 구역 | NPCs:[] | Enemies:[] | Items:[]
+  - seq-6: 고대 지도 조각 | NPCs:[] | Enemies:[] | Items:['102']
+  - seq-7: 파라오의 관 | NPCs:['npc-1', 'npc-2'] | Enemies:[] | Items:[]
+===========================================================
+
+--- INITIAL STATE ---
+Session: Act(act-1), Seq(seq-1), Turn(0)
+Player: HP(None), MP(None), SAN(None)
+NPCs: None(HP:30)
+Enemies: None
+---------------------
+
+==================== Turn 1 ====================
+
+[PLAYER]: I examine the strange symbol etched into the hilt of my sword.
+
+{
+  "session_id": "ebf4f0c4-d85a-403c-a1ba-65f1fa02d029",
+  "status": "failed",
+  "error": {
+    "detail": {
+      "error_type": "PipelineError",
+      "failed_node": "generate_narrative",
+      "failed_service": "LLMGateway",
+      "message": "name 'chain' is not defined",
+      "original_error": "name 'chain' is not defined"
+    }
+  },
+  "completed_turns": 0,
+  "details": []
+}
