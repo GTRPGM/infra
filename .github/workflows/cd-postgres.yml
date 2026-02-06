@@ -78,8 +78,8 @@ jobs:
           docker run -d \
             --name test-container \
             -p ${{ env.PORT }}:5432 \
-            -e POSTGRES_USER=dummy \
-            -e POSTGRES_PASSWORD=dummy \
+            -e DB_USER=dummy \
+            -e DB_PASSWORD=dummy \
             ${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
       - name: Wait for health
@@ -145,7 +145,7 @@ jobs:
 
             export IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
-            export DB_PORT=${{ secrets.POSTGRES_PORT }}
+            export DB_PORT=${{ secrets.DB_PORT }}
             export DB_USER=${{ secrets.DB_USER }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             export DB_NAME=${{ secrets.DB_NAME }}
