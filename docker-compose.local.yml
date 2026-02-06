@@ -6,6 +6,9 @@ services:
     ports:
       - "15432:5432"
     environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gtrpgm
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_DB=gtrpgm
@@ -105,6 +108,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: gtrpgm
+      RULE_ENGINE_URL: http://rule-engine:8050
+      GM_URL: http://gm:8020
     depends_on:
       postgres:
         condition: service_healthy

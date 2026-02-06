@@ -44,10 +44,10 @@ class IntegrationTestRunner:
 
     async def _log_state_snapshot(self, label: str = "현재 상태"):
         state = await self.agent.client.get_session_state(self.session_id)
-        player = state.get("player", {})
-        session = state.get("session", {})
-        npcs = state.get("npcs", [])
-        enemies = state.get("enemies", [])
+        player = state.get("player") or {}
+        session = state.get("session") or {}
+        npcs = state.get("npcs") or []
+        enemies = state.get("enemies") or []
 
         lines = []
         lines.append(f"\n--- {label} ---")
@@ -56,44 +56,47 @@ class IntegrationTestRunner:
         )
         
         # Sequence Goal & Triggers
-        seq_details = state.get("sequence", {})
+        seq_details = state.get("sequence") or {}
         lines.append(f"  [목표]: {seq_details.get('goal', '없음')}")
         lines.append(f"  [트리거]: {seq_details.get('exit_triggers', '없음')}")
 
         # Player Stats
         if player:
-            p_data = player.get("player", {})
+            p_data = player.get("player") or {}
             lines.append(
                 f"플레이어: HP({p_data.get('hp')}), MP({p_data.get('mp')}), SAN({p_data.get('san')}), 골드({p_data.get('gold')})"
             )
 
         # NPC Stats
         if npcs:
+            safe_npcs = [n for n in npcs if isinstance(n, dict)]
             npc_str = ", ".join([
-                f"{n.get('scenario_entity_id') or n.get('scenario_npc_id')}(HP:{n.get('state', {}).get('hp')})"
-                for n in npcs
+                f"{n.get('scenario_entity_id') or n.get('scenario_npc_id')}(HP:{(n.get('state') or {}).get('hp')})"
+                for n in safe_npcs
             ])
-            lines.append(f"NPC 목록: {npc_str}")
+            lines.append(f"NPC 목록: {npc_str if npc_str else '없음'}")
         else:
             lines.append("NPC 목록: 없음")
 
         # Enemy Stats
         if enemies:
+            safe_enemies = [e for e in enemies if isinstance(e, dict)]
             enemy_str = ", ".join([
-                f"{e.get('scenario_entity_id') or e.get('scenario_enemy_id')}(HP:{e.get('state', {}).get('hp')})"
-                for e in enemies
+                f"{e.get('scenario_entity_id') or e.get('scenario_enemy_id')}(HP:{(e.get('state') or {}).get('hp')})"
+                for e in safe_enemies
             ])
-            lines.append(f"적 목록: {enemy_str}")
+            lines.append(f"적 목록: {enemy_str if enemy_str else '없음'}")
         else:
             lines.append("적 목록: 없음")
 
         # Items in Sequence
         items = seq_details.get("items", [])
         if items:
+            safe_items = [i for i in items if isinstance(i, dict)]
             item_str = ", ".join([
-                 f"{i.get('scenario_item_id')}({i.get('name')})" for i in items
+                 f"{i.get('scenario_item_id')}({i.get('name')})" for i in safe_items
             ])
-            lines.append(f"아이템 목록: {item_str}")
+            lines.append(f"아이템 목록: {item_str if item_str else '없음'}")
         else:
             lines.append("아이템 목록: 없음")
         lines.append("-" * (len(label) + 8))
@@ -205,6 +208,7 @@ class IntegrationTestRunner:
                 logger.info(f"제 {turn} 턴 완료.")
 
         except Exception as e:
+            logger.exception("통합 테스트 실행 중 예외 발생")
             error_detail = str(e)
             if hasattr(e, "response") and e.response is not None:
                 try:

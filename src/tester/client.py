@@ -27,6 +27,7 @@ class GMClient:
         url = f"{self.state_url}/state/session/start"
         payload = {
             "scenario_id": state_manager_scenario_id,
+            "user_id": 1,
             "current_act": 1,
             "current_sequence": 1,
             "location": "기본 시작 지점"
@@ -108,7 +109,11 @@ class GMClient:
             # 1. Session Info (Includes player_id, current_act_id, current_sequence_id)
             session_url = f"{self.state_url}/state/session/{session_id}"
             session_resp = await client.get(session_url)
-            session_info = session_resp.json().get("data", {}) if session_resp.status_code == 200 else {}
+            session_info = (
+                (session_resp.json().get("data") or {})
+                if session_resp.status_code == 200
+                else {}
+            )
             
             player_id = session_info.get("player_id")
             player_state = {}
@@ -116,22 +121,38 @@ class GMClient:
                 # 2. Player State (HP, MP, SAN, etc.)
                 player_url = f"{self.state_url}/state/player/{player_id}"
                 player_resp = await client.get(player_url)
-                player_state = player_resp.json().get("data", {}) if player_resp.status_code == 200 else {}
+                player_state = (
+                    (player_resp.json().get("data") or {})
+                    if player_resp.status_code == 200
+                    else {}
+                )
 
             # 3. NPCs
             npc_url = f"{self.state_url}/state/session/{session_id}/npcs"
             npc_resp = await client.get(npc_url)
-            npcs = npc_resp.json().get("data", []) if npc_resp.status_code == 200 else []
+            npcs = (
+                (npc_resp.json().get("data") or [])
+                if npc_resp.status_code == 200
+                else []
+            )
 
             # 4. Enemies
             enemy_url = f"{self.state_url}/state/session/{session_id}/enemies"
             enemy_resp = await client.get(enemy_url)
-            enemies = enemy_resp.json().get("data", []) if enemy_resp.status_code == 200 else []
+            enemies = (
+                (enemy_resp.json().get("data") or [])
+                if enemy_resp.status_code == 200
+                else []
+            )
 
             # 5. Sequence Details
             seq_url = f"{self.state_url}/state/session/{session_id}/sequence/details"
             seq_resp = await client.get(seq_url)
-            seq_details = seq_resp.json().get("data", {}) if seq_resp.status_code == 200 else {}
+            seq_details = (
+                (seq_resp.json().get("data") or {})
+                if seq_resp.status_code == 200
+                else {}
+            )
 
             return {
                 "session": session_info,
