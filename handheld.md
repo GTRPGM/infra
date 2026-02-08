@@ -14,10 +14,10 @@
 ## 2. 개발 상태 (Development Status) - 2026.02.05 Updated
 
 ### ✅ Done (완료된 작업)
-- **[Feature] 오프닝 브리핑 (Opening Narrative)**: 
+- **[Feature] 오프닝 브리핑 (Opening Narrative)**:
   - `POST /api/v1/game/summary` 엔드포인트 신설.
   - 게임 시작/재개 시 플레이어 입력 없이 현재 상황(위치, NPC, 분위기)을 먼저 묘사하여 몰입감 조성 및 "기억 상실" 클리셰 방지.
-- **[Fix] 환각(Hallucination) 방지**: 
+- **[Fix] 환각(Hallucination) 방지**:
   - 나레이터 프롬프트에 `World Snapshot`에 없는 장소/아이템 생성을 엄격히 금지하는 제약 추가. (없는 숲, 펜던트 생성 방지)
 - **[Fix] 데이터 무결성 & 흐름**:
   - `scenario_id` 유실 버그 수정 (UUID가 LangGraph 컨텍스트를 타고 정확히 전달됨).

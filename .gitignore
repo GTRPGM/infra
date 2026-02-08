@@ -39,4 +39,3 @@ tmp/
 .flaskenv
 .envrc
 *.code-workspace
-

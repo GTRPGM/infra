@@ -1,0 +1,289 @@
+{
+  "title": "TST_SIX_SEQUENCE_THREE_ACT_EVAL_V1",
+  "description": "3액트/6시퀀스 고도화 평가 시나리오. 시작 장비(포션/무기) + 필수 아이템 5종 기반 진행.",
+  "acts": [
+    {
+      "id": "act-1",
+      "name": "추적",
+      "description": "입구 단서 확보와 재료 회수",
+      "exit_criteria": "필수 재료를 회수하고 제단으로 이동",
+      "sequences": ["seq-1", "seq-2"]
+    },
+    {
+      "id": "act-2",
+      "name": "침투",
+      "description": "협상과 봉인문 해제",
+      "exit_criteria": "봉인문 통과 후 교전 구역 진입",
+      "sequences": ["seq-3", "seq-4"]
+    },
+    {
+      "id": "act-3",
+      "name": "결전",
+      "description": "교전 후 핵심 적 제거 및 봉인 안정화",
+      "exit_criteria": "핵심 적 제거 및 봉인 안정화",
+      "sequences": ["seq-5", "seq-6"]
+    }
+  ],
+  "sequences": [
+    {
+      "id": "seq-1",
+      "name": "입구 탐색",
+      "location_name": "무너진 관문",
+      "description": "입구에서 단서를 찾아 루트를 확보한다.",
+      "goal": "관문을 조사해 루트 단서를 확보한다.",
+      "exit_triggers": ["루트 단서를 확보하고 저장고로 이동한다."],
+      "metadata": { "sequence_type": "EXPLORATION" },
+      "npcs": ["npc-scout-1"],
+      "enemies": ["enemy-wolf-1"],
+      "items": ["item-route-compass-1", "item-seal-shard-1"]
+    },
+    {
+      "id": "seq-2",
+      "name": "재료 회수",
+      "location_name": "파손 저장고",
+      "description": "의식 재료를 확보한다.",
+      "goal": "의식 재료를 회수하고 제단 협상 준비를 마친다.",
+      "exit_triggers": ["필수 재료를 회수하고 제단으로 이동한다."],
+      "metadata": { "sequence_type": "EXPLORATION" },
+      "npcs": ["npc-herbalist-1"],
+      "enemies": ["enemy-slime-1"],
+      "items": ["item-moon-lens-1"]
+    },
+    {
+      "id": "seq-3",
+      "name": "제단 협상",
+      "location_name": "중앙 제단",
+      "description": "엘더/경비병과 협상한다.",
+      "goal": "통행권과 봉인 정보를 확보한다.",
+      "exit_triggers": ["통행권을 확보하고 봉인 복도로 이동한다."],
+      "metadata": { "sequence_type": "NEGOTIATION" },
+      "npcs": ["npc-elder-1", "npc-guard-1"],
+      "enemies": ["enemy-cultist-1"],
+      "items": ["item-oath-seal-1"]
+    },
+    {
+      "id": "seq-4",
+      "name": "봉인문 잠입",
+      "location_name": "봉인 복도",
+      "description": "기술자 도움으로 봉인문을 해제한다.",
+      "goal": "봉인문을 해제해 교전 구역으로 진입한다.",
+      "exit_triggers": ["봉인문을 해제하고 교전 구역으로 진입한다."],
+      "metadata": { "sequence_type": "INFILTRATION" },
+      "npcs": ["npc-engineer-1"],
+      "enemies": ["enemy-sentinel-1"],
+      "items": ["item-core-key-1"]
+    },
+    {
+      "id": "seq-5",
+      "name": "교전 구역 확보",
+      "location_name": "전초 홀",
+      "description": "결전 직전 교전 구역의 위협을 제거한다.",
+      "goal": "전초 홀의 위협을 제압하고 결전 구역으로 이동한다.",
+      "exit_triggers": ["전초 홀을 확보하고 결전 구역으로 이동한다."],
+      "metadata": { "sequence_type": "COMBAT" },
+      "npcs": ["npc-scout-1", "npc-guard-1"],
+      "enemies": ["enemy-wolf-1", "enemy-cultist-1", "enemy-sentinel-1"],
+      "items": []
+    },
+    {
+      "id": "seq-6",
+      "name": "핵심 결전",
+      "location_name": "심연 코어실",
+      "description": "핵심 적을 처치하고 봉인을 안정화한다.",
+      "goal": "핵심 적을 처치하고 봉인 결정을 완료한다.",
+      "exit_triggers": ["핵심 적을 처치하고 봉인을 안정화한다."],
+      "metadata": { "sequence_type": "BOSS_COMBAT" },
+      "npcs": ["npc-elder-1", "npc-engineer-1"],
+      "enemies": [
+        "enemy-wolf-1",
+        "enemy-slime-1",
+        "enemy-cultist-1",
+        "enemy-sentinel-1",
+        "enemy-warden-1"
+      ],
+      "items": ["item-sealing-crystal-1"]
+    }
+  ],
+  "npcs": [
+    {
+      "scenario_npc_id": "npc-scout-1",
+      "rule_id": 5901,
+      "name": "정찰자 린",
+      "description": "현장 추적 담당 정찰자",
+      "tags": ["scout", "guide"],
+      "state": { "hp": 24, "carried_items": ["item-route-compass-1", "item-healing-potion-1"] },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-herbalist-1",
+      "rule_id": 5902,
+      "name": "약초사 미라",
+      "description": "의식 재료에 정통한 약초사",
+      "tags": ["support", "craft"],
+      "state": { "hp": 22, "carried_items": ["item-moon-lens-1", "item-healing-potion-1"] },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-elder-1",
+      "rule_id": 5903,
+      "name": "봉인의 엘더",
+      "description": "봉인 의식을 총괄하는 장로",
+      "tags": ["lore", "quest"],
+      "state": { "hp": 30, "carried_items": ["item-oath-seal-1", "item-sealing-crystal-1"] },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-guard-1",
+      "rule_id": 5904,
+      "name": "수호병 토른",
+      "description": "교전 구역 수호병",
+      "tags": ["melee", "guard"],
+      "state": { "hp": 36, "carried_items": ["item-iron-sword-1", "item-core-key-1"] },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-engineer-1",
+      "rule_id": 5905,
+      "name": "기술자 오브",
+      "description": "봉인문 해제 전문가",
+      "tags": ["unlock", "utility"],
+      "state": { "hp": 23, "carried_items": ["item-core-key-1", "item-route-compass-1"] },
+      "is_departed": false
+    }
+  ],
+  "enemies": [
+    {
+      "scenario_enemy_id": "enemy-wolf-1",
+      "rule_id": 6901,
+      "name": "폐허 늑대",
+      "description": "관문을 배회하는 야수",
+      "tags": ["beast", "rush"],
+      "state": { "hp": 26, "attack": 5, "carried_items": ["item-route-compass-1", "item-healing-potion-1"] },
+      "dropped_items": [7903, 7901]
+    },
+    {
+      "scenario_enemy_id": "enemy-slime-1",
+      "rule_id": 6902,
+      "name": "산성 슬라임",
+      "description": "저장고를 점거한 점액체",
+      "tags": ["ooze", "acid"],
+      "state": { "hp": 32, "attack": 4, "carried_items": ["item-moon-lens-1", "item-healing-potion-1"] },
+      "dropped_items": [7904, 7901]
+    },
+    {
+      "scenario_enemy_id": "enemy-cultist-1",
+      "rule_id": 6903,
+      "name": "광신도 집행자",
+      "description": "제단 주변을 순찰하는 집행자",
+      "tags": ["human", "magic"],
+      "state": { "hp": 36, "attack": 7, "carried_items": ["item-oath-seal-1", "item-iron-sword-1"] },
+      "dropped_items": [7905, 7902]
+    },
+    {
+      "scenario_enemy_id": "enemy-sentinel-1",
+      "rule_id": 6904,
+      "name": "봉인 수호자",
+      "description": "봉인문 앞 자동 수호체",
+      "tags": ["construct", "defense"],
+      "state": { "hp": 42, "attack": 8, "carried_items": ["item-core-key-1", "item-iron-sword-1"] },
+      "dropped_items": [7906, 7902]
+    },
+    {
+      "scenario_enemy_id": "enemy-warden-1",
+      "rule_id": 6905,
+      "name": "심연의 감시자",
+      "description": "코어실을 지키는 핵심 적",
+      "tags": ["boss", "dark"],
+      "state": { "hp": 58, "attack": 10, "carried_items": ["item-sealing-crystal-1", "item-healing-potion-1"] },
+      "dropped_items": [7907, 7901]
+    }
+  ],
+  "items": [
+    {
+      "scenario_item_id": "item-healing-potion-1",
+      "rule_id": 7901,
+      "name": "회복 포션",
+      "description": "기본 회복용 포션",
+      "item_type": "consumable",
+      "meta": { "starter": true }
+    },
+    {
+      "scenario_item_id": "item-iron-sword-1",
+      "rule_id": 7902,
+      "name": "철검",
+      "description": "기본 근접 무기",
+      "item_type": "equipment",
+      "meta": { "starter": true }
+    },
+    {
+      "scenario_item_id": "item-route-compass-1",
+      "rule_id": 7903,
+      "name": "경로 나침반",
+      "description": "미로식 복도 경로를 가리키는 장치",
+      "item_type": "quest",
+      "meta": { "essential": true }
+    },
+    {
+      "scenario_item_id": "item-seal-shard-1",
+      "rule_id": 7904,
+      "name": "봉인 파편",
+      "description": "봉인 구조를 해석하기 위한 파편",
+      "item_type": "quest",
+      "meta": { "essential": true }
+    },
+    {
+      "scenario_item_id": "item-moon-lens-1",
+      "rule_id": 7905,
+      "name": "월광 렌즈",
+      "description": "의식 문양을 투시하는 렌즈",
+      "item_type": "quest",
+      "meta": { "essential": true }
+    },
+    {
+      "scenario_item_id": "item-oath-seal-1",
+      "rule_id": 7906,
+      "name": "맹세 인장",
+      "description": "제단 통행권 확인에 쓰이는 인장",
+      "item_type": "quest",
+      "meta": { "essential": true }
+    },
+    {
+      "scenario_item_id": "item-core-key-1",
+      "rule_id": 7907,
+      "name": "코어 열쇠",
+      "description": "코어실 봉인을 여는 열쇠",
+      "item_type": "quest",
+      "meta": { "essential": true }
+    },
+    {
+      "scenario_item_id": "item-sealing-crystal-1",
+      "rule_id": 7908,
+      "name": "봉인 수정",
+      "description": "최종 봉인 안정화에 필요한 결정체",
+      "item_type": "quest",
+      "meta": { "essential": true }
+    }
+  ],
+  "relations": [
+    { "from_id": "npc-scout-1", "to_id": "item-route-compass-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-scout-1", "to_id": "item-healing-potion-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-herbalist-1", "to_id": "item-moon-lens-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-herbalist-1", "to_id": "item-healing-potion-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-elder-1", "to_id": "item-oath-seal-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-elder-1", "to_id": "item-sealing-crystal-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-guard-1", "to_id": "item-iron-sword-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-guard-1", "to_id": "item-core-key-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-engineer-1", "to_id": "item-core-key-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "npc-engineer-1", "to_id": "item-route-compass-1", "relation_type": "owns", "affinity": 80, "meta": {} },
+    { "from_id": "enemy-wolf-1", "to_id": "item-route-compass-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-wolf-1", "to_id": "item-healing-potion-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-slime-1", "to_id": "item-moon-lens-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-slime-1", "to_id": "item-healing-potion-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-cultist-1", "to_id": "item-oath-seal-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-cultist-1", "to_id": "item-iron-sword-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-sentinel-1", "to_id": "item-core-key-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-sentinel-1", "to_id": "item-iron-sword-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-warden-1", "to_id": "item-sealing-crystal-1", "relation_type": "owns", "affinity": 10, "meta": {} },
+    { "from_id": "enemy-warden-1", "to_id": "item-healing-potion-1", "relation_type": "owns", "affinity": 10, "meta": {} }
+  ]
+}

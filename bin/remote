@@ -16,7 +16,7 @@ case "$COMMAND" in
         echo "Dumping remote database to $OUTPUT_FILE..."
         ssh -i "$GITHUB_DEPLOY_KEY_PATH" "$REMOTE_USERNAME@$REMOTE_HOST" \
         "docker exec postgres pg_dump -U gtrpgm -d gtrpgm" > "$OUTPUT_FILE"
-        
+
         if [ $? -eq 0 ]; then
             echo "Success: Dump saved to $OUTPUT_FILE"
         else

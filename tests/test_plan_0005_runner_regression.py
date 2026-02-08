@@ -33,7 +33,15 @@ class _FakeAgent:
         self.client = _FakeClient()
         self._turn = 0
 
-    async def setup_session(self, concept: str):
+    async def setup_session(
+        self,
+        concept: str,
+        force_generate: bool = False,
+        preferred_scenario_id: str | None = None,
+        preferred_scenario_title_exact: str | None = None,
+        preferred_scenario_title: str | None = None,
+        strict_load: bool = False,
+    ):
         scenario = {
             "title": "t",
             "genre": "g",
@@ -71,6 +79,8 @@ def test_runner_smoke_10_turns(monkeypatch):
     report = asyncio.run(runner.run_full_test())
     assert report["status"] == "success"
     assert report["total_turns"] == 10
+    assert "alive_enemies_in_current_sequence" in report
+    assert "alive_enemies_in_current_sequence" in report["details"][0]
 
 
 def test_runner_endurance_20_turns(monkeypatch):
@@ -79,6 +89,8 @@ def test_runner_endurance_20_turns(monkeypatch):
     report = asyncio.run(runner.run_full_test())
     assert report["status"] == "success"
     assert report["total_turns"] == 20
+    assert "alive_enemies_in_current_sequence" in report
+    assert "alive_enemies_in_current_sequence" in report["details"][0]
 
 
 def test_runner_failure_repro(monkeypatch):

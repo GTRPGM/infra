@@ -58,10 +58,11 @@ services:
       RULE_ENGINE_PORT: 8050
       LLM_GATEWAY_HOST: llm-gateway
       LLM_GATEWAY_PORT: 8060
-      APP_HOST: 127.0.0.1
+      APP_HOST: 0.0.0.0
 
       WEB_PORT: 8080
       SECRET_KEY: "absdefghijklmn"
+      ALGORITHM: "HS256"
 
     depends_on:
       postgres:
@@ -90,6 +91,7 @@ services:
       RULE_ENGINE_PORT: 8050
       LLM_GATEWAY_HOST: llm-gateway
       LLM_GATEWAY_PORT: 8060
+      LLM_MODEL_NAME: gpt-4o-mini
     depends_on:
       postgres:
         condition: service_healthy
@@ -136,6 +138,7 @@ services:
       RULE_ENGINE_PORT: 8050
       LLM_GATEWAY_HOST: llm-gateway
       LLM_GATEWAY_PORT: 8060
+      LLM_MODEL_NAME: gpt-4o-mini
     depends_on:
       postgres:
         condition: service_healthy
@@ -162,6 +165,7 @@ services:
       SCENARIO_SERVICE_PORT: 8040
       LLM_GATEWAY_HOST: llm-gateway
       LLM_GATEWAY_PORT: 8060
+      LLM_MODEL_NAME: gpt-4o-mini
       GM_HOST: gm
       GM_PORT: 8020
     depends_on:
@@ -181,6 +185,8 @@ services:
       PORT: 8060
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DEFAULT_PROVIDER: openai
+      OPENAI_DEFAULT_MODEL: gpt-4o-mini
     networks:
       - platform-net
 

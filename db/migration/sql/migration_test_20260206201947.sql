@@ -15,8 +15,8 @@ DROP TABLE IF EXISTS public.enemy CASCADE;
 DROP TABLE IF EXISTS public.item CASCADE;
 
 -- 시나리오 구조 (필요하다면 남길 수 있으나, Rule/User 서버 정의에 따르면 제거 대상일 수 있음)
--- 여기서는 일단 "룰-유저 서버"에 시나리오 구조가 포함되는지 모호하나, 
--- 사용자가 "관계 연결 된거랑 안된거로 나눠서"라고 했으므로 
+-- 여기서는 일단 "룰-유저 서버"에 시나리오 구조가 포함되는지 모호하나,
+-- 사용자가 "관계 연결 된거랑 안된거로 나눠서"라고 했으므로
 -- 시나리오 텍스트 자체는 룰 데이터에 가까움.
 -- 하지만 앞서 "시나리오 부분 삭제해줄 수 있나?"라고 물었으므로 삭제 목록에 포함.
 DROP TABLE IF EXISTS public.scenario_sequence CASCADE;

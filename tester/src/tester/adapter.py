@@ -2,29 +2,39 @@ from typing import Any, List, Optional
 import httpx
 from langchain_core.callbacks import AsyncCallbackManagerForLLMRun
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import AIMessage, BaseMessage, ChatMessage as LCChatMessage, SystemMessage, HumanMessage
+from langchain_core.messages import (
+    AIMessage,
+    BaseMessage,
+    ChatMessage as LCChatMessage,
+    SystemMessage,
+    HumanMessage,
+)
 from langchain_core.outputs import ChatGeneration, ChatResult
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from tester.models import ChatCompletionRequest, ChatCompletionResponse, ChatMessage
 
+
 class TesterSettings(BaseSettings):
     LLM_GATEWAY_URL: str = "http://localhost:18060"
     LLM_MODEL_NAME: str = "gemini-2.0-flash-lite"
-    GM_URL: str = "http://localhost:18020"
-    SCENARIO_SERVICE_URL: str = "http://localhost:18040"
-    STATE_MANAGER_URL: str = "http://localhost:18030"
-    
+    BE_ROUTER_URL: str = "http://localhost:18010"
+    TESTER_USERNAME: str = "tester_bot"
+    TESTER_PASSWORD: str = "tester_bot_password123!"
+    TESTER_EMAIL: str = "tester_bot@example.local"
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+
 settings = TesterSettings()
+
 
 class LLMGatewayChatModel(BaseChatModel):
     """
     LangChain adapter for LLM Gateway.
     """
-    
+
     base_url: str = Field(default_factory=lambda: settings.LLM_GATEWAY_URL)
     model_name: str = Field(default_factory=lambda: settings.LLM_MODEL_NAME)
     client: httpx.AsyncClient = Field(default_factory=lambda: httpx.AsyncClient())
@@ -57,7 +67,7 @@ class LLMGatewayChatModel(BaseChatModel):
         **kwargs: Any,
     ) -> ChatResult:
         schema_messages = [self._convert_lc_to_schema(m) for m in messages]
-        
+
         request = ChatCompletionRequest(
             model=self.model_name,
             messages=schema_messages,
@@ -72,14 +82,14 @@ class LLMGatewayChatModel(BaseChatModel):
                 json=request.model_dump(exclude_none=True),
             )
             response.raise_for_status()
-            
+
             chat_response = ChatCompletionResponse(**response.json())
-            
+
             if not chat_response.choices:
                 return ChatResult(generations=[])
-            
+
             choice = chat_response.choices[0]
-            
+
             generation = ChatGeneration(
                 message=AIMessage(content=choice.message.content or ""),
                 generation_info={"finish_reason": choice.finish_reason},

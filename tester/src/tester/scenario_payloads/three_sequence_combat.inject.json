@@ -1,0 +1,100 @@
+{
+  "title": "TST_THREE_SEQUENCE_COMBAT_V2",
+  "description": "3시퀀스 고정 검증용: 열쇠 획득/문 개방 -> NPC 협상 -> 전투 종결",
+  "acts": [
+    {
+      "id": "act-1",
+      "name": "탈출의 시작",
+      "description": "폐허를 빠져나가기 위한 3단계",
+      "exit_criteria": "세 개의 시퀀스를 모두 완료한다",
+      "sequences": ["seq-1", "seq-2", "seq-3"]
+    }
+  ],
+  "sequences": [
+    {
+      "id": "seq-1",
+      "name": "잠긴 문",
+      "location_name": "폐허 입구",
+      "description": "열쇠를 찾아 잠긴 문을 연다",
+      "goal": "녹슨 열쇠를 찾아 문을 열고 폐허 내부로 진입한다.",
+      "exit_triggers": ["녹슨 열쇠를 사용하여 문을 연다."],
+      "npcs": [],
+      "enemies": [],
+      "items": ["item-rusty-key-1"]
+    },
+    {
+      "id": "seq-2",
+      "name": "엘더와의 협상",
+      "location_name": "중앙 홀",
+      "description": "엘더와 협상해 통행 허가를 얻는다",
+      "goal": "엘더와 대화하여 폐허 정보를 얻고 통과 허가를 받는다.",
+      "exit_triggers": ["엘더에게서 정보를 얻고, 다음 장소로 이동한다."],
+      "npcs": ["npc-elder-1"],
+      "enemies": [],
+      "items": []
+    },
+    {
+      "id": "seq-3",
+      "name": "고블린 전투",
+      "location_name": "깊은 통로",
+      "description": "전투로 위협을 제거한다",
+      "goal": "고블린들을 물리치고 통로를 확보한다.",
+      "exit_triggers": ["모든 고블린을 처치한다."],
+      "npcs": [],
+      "enemies": ["enemy-goblin-1", "enemy-goblin-2"],
+      "items": []
+    }
+  ],
+  "npcs": [
+    {
+      "scenario_npc_id": "npc-elder-1",
+      "rule_id": 1101,
+      "name": "엘더",
+      "description": "폐허의 길을 아는 노인",
+      "tags": ["guide", "negotiation"],
+      "state": {
+        "hp": 10
+      },
+      "is_departed": false
+    }
+  ],
+  "enemies": [
+    {
+      "scenario_enemy_id": "enemy-goblin-1",
+      "rule_id": 2101,
+      "name": "고블린 정찰병",
+      "description": "민첩한 고블린",
+      "tags": ["goblin", "melee"],
+      "state": {
+        "hp": 30,
+        "attack": 6
+      },
+      "dropped_items": []
+    },
+    {
+      "scenario_enemy_id": "enemy-goblin-2",
+      "rule_id": 2102,
+      "name": "고블린 전사",
+      "description": "거친 전사",
+      "tags": ["goblin", "melee"],
+      "state": {
+        "hp": 35,
+        "attack": 7
+      },
+      "dropped_items": []
+    }
+  ],
+  "items": [
+    {
+      "scenario_item_id": "item-rusty-key-1",
+      "rule_id": 3101,
+      "name": "녹슨 열쇠",
+      "description": "잠긴 문을 여는 열쇠",
+      "item_type": "quest",
+      "meta": {
+        "quest_item": true
+      }
+    }
+  ],
+  "relations": []
+}

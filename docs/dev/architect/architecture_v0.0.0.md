@@ -66,3 +66,25 @@
   - Scenario transition API 미구현 구간 보강
   - 통합 테스트(10~20턴) 기준선 고정 및 회귀 자동화
 - 현재 버전(`v0.0.0`)은 구조는 동작하나, 스키마 계약/전이 경계에 운영 리스크가 남아 있음.
+
+## Runtime validation notes (2026-02-07)
+- `scenario-service` 전이 가드 보강:
+  - act context 내 시퀀스 정렬을 `seq-*` 번호 기준으로 고정.
+  - 비선형/역전이(`next_seq_id`가 현재 이하) 제안을 차단.
+  - terminal sequence에서 트리거 충족 + 유효 전이 없음이면 `should_end=true`를 반환.
+- `gm` 종료 처리:
+  - 시나리오 제안의 `should_end=true`를 수신하면 상태 커밋 이후 `state/session/{session_id}/end` 호출.
+  - 종료 턴 나레이션에 종료 문구(`모험은 끝이 났다.`)를 강제하여 종료 검증 일관성 확보.
+- 운영 관측:
+  - 실환경에서는 `llm-gateway` 500/의존 타임아웃으로 E2E 턴 실패가 간헐 발생하며, 이는 종료 로직과 별도의 가용성 이슈로 추적 필요.
+
+## Runtime validation notes (2026-02-07, latest)
+- `gm` 턴 오케스트레이션 보강:
+  - 플레이어 턴에서 시퀀스가 바뀐 경우(`pre_sequence_id != post_sequence_id`) 같은 턴의 NPC 자동 턴을 생략.
+  - 목적: 새 시퀀스 진입 직후 NPC가 종료 트리거를 선점해 조기 종료되는 현상 차단.
+- `tester` 로드 선택 보강:
+  - `setup_session`에서 `preferred_scenario_id`가 있을 때 `title_exact/title_hint`가 선택을 덮어쓰지 않도록 우선순위 고정.
+- 최신 E2E 결과(프로필 `three_sequence_combat`):
+  - `seq-1 -> seq-2 -> seq-3` 전이 성공
+  - 전이별 등장/퇴장 검증 성공
+  - 3턴 종료 시 `session.status=ended` 및 마무리 문구 검증 성공

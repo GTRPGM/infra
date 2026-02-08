@@ -1,0 +1,15 @@
+{
+  "name": "five_sequence_evaluation",
+  "concept": "정확히 5개 시퀀스로 구성된 TRPG 시나리오를 생성하라. seq-1 탐색, seq-2 수집, seq-3 협상, seq-4 잠입, seq-5 전투의 흐름을 가진다. 각 시퀀스는 goal과 exit_trigger가 명확해야 한다.",
+  "min_sequences": 5,
+  "scripted_actions": [
+    "입구를 조사해 단서를 확보하고 내부 복도로 진입한다.",
+    "의식 재료를 수집하고 다음 협상 단계 준비를 마친다.",
+    "엘더에게 재료를 제시해 통행 허가와 암호를 요청한다.",
+    "암호와 도구를 활용해 봉인문을 해제하고 전투 구역으로 이동한다.",
+    "전투 태세를 갖추고 핵심 적을 집중 공격해 구역을 확보한다."
+  ],
+  "load_title_exact": "TST_FIVE_SEQUENCE_EVALUATION_V1",
+  "load_title_hint": "5시퀀스",
+  "pinned_state_scenario_id": null
+}

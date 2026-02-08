@@ -1,0 +1,13 @@
+{
+  "name": "three_sequence_combat",
+  "concept": "다음 구조를 반드시 따르는 짧은 TRPG 시나리오를 생성해줘. 시퀀스는 정확히 3개. 1번 시퀀스 목표: 열쇠를 찾아 잠긴 문을 열고 나간다. 2번 시퀀스 목표: NPC와 협상해 통과 허가를 얻는다. 3번 시퀀스 목표: 적과 전투해 위협을 제거한다. 각 시퀀스는 명확한 goal/exit_trigger를 가져야 한다.",
+  "min_sequences": 3,
+  "scripted_actions": [
+    "주변을 수색해 열쇠를 찾아 획득하고, 잠긴 문을 열어 다음 구역으로 이동한다.",
+    "무기를 내리고 대화를 시도한다. 서로 이익이 되는 조건으로 협상해 통과 허가를 요청한다.",
+    "전투 태세를 갖추고 적의 위협을 제거하기 위해 공격한다."
+  ],
+  "load_title_exact": "TST_THREE_SEQUENCE_COMBAT_V2",
+  "load_title_hint": "폐허",
+  "pinned_state_scenario_id": null
+}

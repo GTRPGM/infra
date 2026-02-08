@@ -1,0 +1,213 @@
+{
+  "title": "TST_FIVE_SEQUENCE_EVALUATION_V1",
+  "description": "5시퀀스 평가 시나리오: 탐색-수집-협상-잠입-전투를 검증한다.",
+  "acts": [
+    {
+      "id": "act-1",
+      "name": "심연의 봉인 해제",
+      "description": "폐허에서 단서를 모아 봉인을 해제하고 적을 격파한다.",
+      "exit_criteria": "5개 시퀀스를 완료하고 핵심 적을 처치한다.",
+      "sequences": ["seq-1", "seq-2", "seq-3", "seq-4", "seq-5"]
+    }
+  ],
+  "sequences": [
+    {
+      "id": "seq-1",
+      "name": "입구 탐색",
+      "location_name": "폐허 입구",
+      "description": "입구 주변을 탐색해 첫 단서를 확보한다.",
+      "goal": "입구를 조사해 봉인 해제 단서를 확보한다.",
+      "exit_triggers": ["입구 조사 기록을 확보하고 내부 복도로 진입한다."],
+      "npcs": ["npc-scout-1"],
+      "enemies": ["enemy-wolf-1"],
+      "items": ["item-map-fragment-1"]
+    },
+    {
+      "id": "seq-2",
+      "name": "의식 재료 수집",
+      "location_name": "파손된 저장고",
+      "description": "의식에 필요한 재료를 찾아 확보한다.",
+      "goal": "의식 재료 2개를 확보해 협상 준비를 마친다.",
+      "exit_triggers": ["의식 재료를 확보하고 엘더와 협상할 준비를 마친다."],
+      "npcs": ["npc-herbalist-1"],
+      "enemies": ["enemy-slime-1"],
+      "items": ["item-rune-stone-1", "item-purified-water-1"]
+    },
+    {
+      "id": "seq-3",
+      "name": "엘더 협상",
+      "location_name": "중앙 제단",
+      "description": "엘더에게 재료를 보여주고 허가를 얻는다.",
+      "goal": "엘더에게 재료를 제시해 통행 허가와 암호를 얻는다.",
+      "exit_triggers": ["엘더의 허가를 받고 봉인문 암호를 획득한다."],
+      "npcs": ["npc-elder-1", "npc-guard-1"],
+      "enemies": ["enemy-cultist-1"],
+      "items": ["item-seal-password-1"]
+    },
+    {
+      "id": "seq-4",
+      "name": "봉인문 잠입",
+      "location_name": "봉인 복도",
+      "description": "암호와 도구를 이용해 봉인문을 통과한다.",
+      "goal": "봉인문을 해제하고 전투 구역으로 이동한다.",
+      "exit_triggers": ["봉인문을 해제하고 전투 구역으로 이동한다."],
+      "npcs": ["npc-engineer-1"],
+      "enemies": ["enemy-sentinel-1"],
+      "items": ["item-ancient-key-1"]
+    },
+    {
+      "id": "seq-5",
+      "name": "심연 전투",
+      "location_name": "심연 홀",
+      "description": "핵심 적을 물리치고 봉인을 안정화한다.",
+      "goal": "핵심 적을 처치하고 봉인을 안정화한다.",
+      "exit_triggers": ["핵심 적을 처치하고 봉인을 안정화한다."],
+      "npcs": ["npc-scout-1", "npc-elder-1"],
+      "enemies": [
+        "enemy-wolf-1",
+        "enemy-slime-1",
+        "enemy-cultist-1",
+        "enemy-sentinel-1",
+        "enemy-warden-1"
+      ],
+      "items": []
+    }
+  ],
+  "npcs": [
+    {
+      "scenario_npc_id": "npc-scout-1",
+      "rule_id": 5101,
+      "name": "정찰자 린",
+      "description": "입구를 감시하던 정찰자",
+      "tags": ["guide", "scout"],
+      "state": { "hp": 24 },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-herbalist-1",
+      "rule_id": 5102,
+      "name": "약초사 미라",
+      "description": "의식 재료를 아는 약초사",
+      "tags": ["support", "craft"],
+      "state": { "hp": 20 },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-elder-1",
+      "rule_id": 5103,
+      "name": "봉인의 엘더",
+      "description": "봉인 의식을 전승한 장로",
+      "tags": ["quest", "lore"],
+      "state": { "hp": 30 },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-guard-1",
+      "rule_id": 5104,
+      "name": "수호병 토른",
+      "description": "제단을 지키는 수호병",
+      "tags": ["guard", "melee"],
+      "state": { "hp": 34 },
+      "is_departed": false
+    },
+    {
+      "scenario_npc_id": "npc-engineer-1",
+      "rule_id": 5105,
+      "name": "기술자 오브",
+      "description": "봉인문 해제 장치를 다루는 기술자",
+      "tags": ["utility", "unlock"],
+      "state": { "hp": 22 },
+      "is_departed": false
+    }
+  ],
+  "enemies": [
+    {
+      "scenario_enemy_id": "enemy-wolf-1",
+      "rule_id": 6101,
+      "name": "폐허 늑대",
+      "description": "폐허 입구를 배회하는 늑대",
+      "tags": ["beast", "melee"],
+      "state": { "hp": 26, "attack": 5 },
+      "dropped_items": ["item-map-fragment-1"]
+    },
+    {
+      "scenario_enemy_id": "enemy-slime-1",
+      "rule_id": 6102,
+      "name": "산성 슬라임",
+      "description": "저장고를 지키는 점액체",
+      "tags": ["ooze", "acid"],
+      "state": { "hp": 32, "attack": 4 },
+      "dropped_items": ["item-purified-water-1"]
+    },
+    {
+      "scenario_enemy_id": "enemy-cultist-1",
+      "rule_id": 6103,
+      "name": "광신도 집행자",
+      "description": "제단 주변을 순찰하는 집행자",
+      "tags": ["human", "magic"],
+      "state": { "hp": 36, "attack": 7 },
+      "dropped_items": ["item-seal-password-1"]
+    },
+    {
+      "scenario_enemy_id": "enemy-sentinel-1",
+      "rule_id": 6104,
+      "name": "봉인 수호자",
+      "description": "봉인문 앞 자동 수호체",
+      "tags": ["construct", "defense"],
+      "state": { "hp": 42, "attack": 8 },
+      "dropped_items": ["item-ancient-key-1"]
+    },
+    {
+      "scenario_enemy_id": "enemy-warden-1",
+      "rule_id": 6105,
+      "name": "심연의 감시자",
+      "description": "최종 구역을 지키는 핵심 적",
+      "tags": ["boss", "dark"],
+      "state": { "hp": 58, "attack": 10 },
+      "dropped_items": ["item-rune-stone-1"]
+    }
+  ],
+  "items": [
+    {
+      "scenario_item_id": "item-map-fragment-1",
+      "rule_id": 7101,
+      "name": "지도 파편",
+      "description": "복도 구조가 그려진 파편",
+      "item_type": "quest",
+      "meta": { "quest_item": true }
+    },
+    {
+      "scenario_item_id": "item-rune-stone-1",
+      "rule_id": 7102,
+      "name": "룬 각인석",
+      "description": "의식에 필요한 룬석",
+      "item_type": "quest",
+      "meta": { "quest_item": true }
+    },
+    {
+      "scenario_item_id": "item-purified-water-1",
+      "rule_id": 7103,
+      "name": "정화수",
+      "description": "봉인 안정화에 필요한 물",
+      "item_type": "consumable",
+      "meta": { "ritual": true }
+    },
+    {
+      "scenario_item_id": "item-seal-password-1",
+      "rule_id": 7104,
+      "name": "봉인 암호문",
+      "description": "봉인문 해제 암호가 적힌 문서",
+      "item_type": "document",
+      "meta": { "quest_item": true }
+    },
+    {
+      "scenario_item_id": "item-ancient-key-1",
+      "rule_id": 7105,
+      "name": "고대 열쇠",
+      "description": "최종 봉인을 여는 열쇠",
+      "item_type": "key",
+      "meta": { "quest_item": true }
+    }
+  ],
+  "relations": []
+}
