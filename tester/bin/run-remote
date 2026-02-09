@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage:
+#   tester/bin/run-remote [session_id] [max_turns] [scenario_profile]
+#
+# Remote mode behavior:
+# - load scenario from state-manager list (first scenario by default)
+# - do NOT attempt scenario-service create/inject
+# - remote ports are expected to be service ports (80x0), not local-mapped (180x0)
+#   (e.g. gm :8020, state-manager :8030, llm-gateway :8060)
+#
+# Example (no profile, first scenario):
+#   tester/bin/run-remote remote-smoke-1 5
+#
+# Example (profile still works, but will load from remote if present):
+#   tester/bin/run-remote remote-prof-1 5 six_sequence_three_act_eval
+
+SID="${1:-remote-$(date +%s)}"
+TURNS="${2:-5}"
+PROFILE="${3:-}"
+
+export TESTER_ENV_FILE="${TESTER_ENV_FILE:-tester/.env.remote}"
+export TESTER_LOAD_ONLY="${TESTER_LOAD_ONLY:-1}"
+export TESTER_DISABLE_SCENARIO_SERVICE_INJECT="${TESTER_DISABLE_SCENARIO_SERVICE_INJECT:-1}"
+export PYTHONPATH="${PYTHONPATH:-tester/src}"
+
+# If REMOTE_HOST is already registered, make remote "direct" runs work with
+# just that single env var.
+if [[ -n "${REMOTE_HOST:-}" ]]; then
+  export API_MODE="${API_MODE:-direct}"
+  export GM_URL="${GM_URL:-http://${REMOTE_HOST}:8020}"
+  export STATE_MANAGER_URL="${STATE_MANAGER_URL:-http://${REMOTE_HOST}:8030}"
+  export SCENARIO_SERVICE_URL="${SCENARIO_SERVICE_URL:-http://${REMOTE_HOST}:8040}"
+  export LLM_GATEWAY_URL="${LLM_GATEWAY_URL:-http://${REMOTE_HOST}:8060}"
+fi
+
+if [[ -n "$PROFILE" ]]; then
+  uv run python -m tester.runner "$SID" "$TURNS" "$PROFILE"
+else
+  uv run python -m tester.runner "$SID" "$TURNS"
+fi

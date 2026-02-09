@@ -1,7 +1,7 @@
 <!-- PROJ_ARCH_BEGIN -->
 ## Architecture
-- current: v0.0.0
-- docs/dev/architect/architecture_v0.0.0.md
+- current: v0.1.0
+- docs/dev/architect/architecture_v0.1.0.md
 <!-- PROJ_ARCH_END -->
 
 <!-- PROJ_DASHBOARD_BEGIN -->
@@ -19,7 +19,7 @@
 | F-009 | Integration Runner | `tester/src/tester/runner.py` 기반 생성-주입-세션시작-턴루프 E2E 러너 | done |
 | F-010 | Session Transition API | Scenario Service `/sessions/transition`가 state-manager act/sequence 갱신을 실제 수행 | done |
 | F-011 | Service Path Migration | 서비스 서브모듈을 `services/`로 재배치하고 테스터 코드를 `tester/src`로 이동 | done |
-| plan_0008 | DB 분리 및 마이그레이션 | `docs/dev/detail/plan_0008.md` | drifted |
+| plan_0008 | DB 분리 및 마이그레이션 | `docs/dev/detail/plan_0008.md` | deprecated |
 | plan_0009 | Session Transition 정렬 | `docs/dev/detail/plan_0009.md` | done |
 | plan_0010 | 테스터 정합성 어설트 강화 | `docs/dev/detail/plan_0010.md` | done |
 | plan_0011 | 시퀀스 전이 누락 탐지 강화 | `docs/dev/detail/plan_0011.md` | done |
@@ -36,10 +36,12 @@
 | plan_0026 | 종료 게이트 정합성 및 터미널 반복 보강 | `docs/dev/detail/plan_0026.md` | done |
 | plan_0027 | require_session_end 강제 장기 회귀 | `docs/dev/detail/plan_0027.md` | done |
 | plan_0028 | 서사-상태 정합 가드레일 | `docs/dev/detail/plan_0028.md` | done |
+| plan_0029 | NPC/적 턴 출력 구조화 (행동/대사 분리) | `docs/dev/detail/plan_0029.md` | done |
+| plan_0030 | 프로젝트 전체 구조도(서비스 및 db 단위) 작성 계획 | docs/dev/detail/plan_0030.md | done |
 <!-- PROJ_DASHBOARD_END -->
 
 <!-- PROJ_TODO_BEGIN -->
 ## TODO (Undone detail plans)
-- `[P0] plan_0012` BE-router 경유 전체 게임 진행 플로우(로그인->시나리오->세션->상태요약->턴) 정상 동작 및 턴/상태 정합성 게이트 구축
-- `[P9 - 최하순위] plan_0008` DB 분리 상태 재정렬 (현재 `docker-compose.local.yml`은 단일 `postgres` 구성, 문서/실행환경 불일치)
+- [ ] `docs/dev/detail/plan_0012.md`
+- [x] `docs/dev/detail/plan_0030.md`
 <!-- PROJ_TODO_END -->

@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 
+import os
 import httpx
 
 from tester.adapter import settings
@@ -8,11 +9,47 @@ from tester.models import GameTurnResponse, UserInput
 
 class GMClient:
     def __init__(self, base_url: str = settings.BE_ROUTER_URL):
+        self.api_mode = str(getattr(settings, "API_MODE", "be_router") or "be_router")
         self.base_url = base_url.rstrip("/")
+        self.gm_url = str(getattr(settings, "GM_URL", "") or "").rstrip("/")
+        self.state_url = str(getattr(settings, "STATE_MANAGER_URL", "") or "").rstrip("/")
+        self.scenario_url = str(getattr(settings, "SCENARIO_SERVICE_URL", "") or "").rstrip("/")
+        self._apply_remote_host_defaults()
         self._access_token: Optional[str] = None
         self._username = settings.TESTER_USERNAME
         self._password = settings.TESTER_PASSWORD
         self._email = settings.TESTER_EMAIL
+
+    def _apply_remote_host_defaults(self) -> None:
+        """
+        If REMOTE_HOST is provided and the caller chose API_MODE=direct, prefer remote
+        service ports (80x0) over local port-mapped defaults (180x0).
+        This lets remote runs work by setting only REMOTE_HOST + API_MODE=direct.
+        """
+        remote_host = str(os.getenv("REMOTE_HOST", "") or "").strip()
+        if not remote_host:
+            return
+
+        if self.api_mode == "direct":
+            if not self.gm_url or self.gm_url == "http://localhost:18020":
+                self.gm_url = f"http://{remote_host}:8020"
+            if not self.state_url or self.state_url == "http://localhost:18030":
+                self.state_url = f"http://{remote_host}:8030"
+            if (not self.scenario_url) or self.scenario_url == "http://localhost:18040":
+                self.scenario_url = f"http://{remote_host}:8040"
+
+    def _service_url(self, service: str, path: str) -> str:
+        p = "/" + str(path or "").lstrip("/")
+        if self.api_mode == "direct":
+            if service == "gm":
+                return f"{self.gm_url}{p}"
+            if service == "state":
+                return f"{self.state_url}{p}"
+            if service == "scenario":
+                return f"{self.scenario_url}{p}"
+            raise ValueError(f"Unknown service={service!r}")
+        # be_router
+        return f"{self.base_url}{p}"
 
     @staticmethod
     def _unwrap(payload: Dict[str, Any]) -> Any:
@@ -23,17 +60,21 @@ class GMClient:
         return payload
 
     def _headers(self) -> Dict[str, str]:
+        if self.api_mode == "direct":
+            return {}
         headers = {}
         if self._access_token:
             headers["Authorization"] = f"Bearer {self._access_token}"
         return headers
 
     async def ensure_authenticated(self) -> None:
+        if self.api_mode == "direct":
+            return
         if self._access_token:
             return
 
-        login_url = f"{self.base_url}/auth/login"
-        create_user_url = f"{self.base_url}/user/create"
+        login_url = self._service_url("be", "/auth/login")
+        create_user_url = self._service_url("be", "/user/create")
         login_payload = {"username": self._username, "password": self._password}
 
         async with httpx.AsyncClient(timeout=15.0) as client:
@@ -57,7 +98,10 @@ class GMClient:
 
     async def create_scenario(self, concept: str) -> Dict[str, Any]:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/scenario/generation/pure"
+        if self.api_mode == "direct":
+            url = self._service_url("scenario", "/api/v1/generation/pure")
+        else:
+            url = self._service_url("be", "/scenario/generation/pure")
         async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.post(
                 url,
@@ -69,7 +113,10 @@ class GMClient:
 
     async def get_scenarios(self) -> List[Dict[str, Any]]:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/state/scenarios"
+        if self.api_mode == "direct":
+            url = self._service_url("state", "/state/scenarios")
+        else:
+            url = self._service_url("be", "/state/scenarios")
         async with httpx.AsyncClient(timeout=20.0) as client:
             response = await client.get(url, headers=self._headers())
             response.raise_for_status()
@@ -78,7 +125,10 @@ class GMClient:
 
     async def get_scenario(self, scenario_id: str) -> Dict[str, Any]:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/state/scenario/{scenario_id}"
+        if self.api_mode == "direct":
+            url = self._service_url("state", f"/state/scenario/{scenario_id}")
+        else:
+            url = self._service_url("be", f"/state/scenario/{scenario_id}")
         async with httpx.AsyncClient(timeout=20.0) as client:
             response = await client.get(url, headers=self._headers())
             response.raise_for_status()
@@ -87,7 +137,10 @@ class GMClient:
 
     async def inject_scenario(self, scenario_id: str) -> Dict[str, Any]:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/scenario/manage/scenarios/{scenario_id}/inject"
+        if self.api_mode == "direct":
+            url = self._service_url("scenario", f"/api/v1/manage/scenarios/{scenario_id}/inject")
+        else:
+            url = self._service_url("be", f"/scenario/manage/scenarios/{scenario_id}/inject")
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(url, headers=self._headers())
             response.raise_for_status()
@@ -95,7 +148,10 @@ class GMClient:
 
     async def start_session(self, state_manager_scenario_id: str) -> str:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/state/session/start"
+        if self.api_mode == "direct":
+            url = self._service_url("state", "/state/session/start")
+        else:
+            url = self._service_url("be", "/state/session/start")
         payload = {
             "scenario_id": state_manager_scenario_id,
             "current_act": 1,
@@ -116,7 +172,11 @@ class GMClient:
             return []
 
         async with httpx.AsyncClient(timeout=15.0) as client:
-            session_url = f"{self.base_url}/state/session/{session_id}"
+            session_url = (
+                self._service_url("state", f"/state/session/{session_id}")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}")
+            )
             session_resp = await client.get(session_url, headers=self._headers())
             session_resp.raise_for_status()
             session_data = self._unwrap(session_resp.json()) or {}
@@ -124,7 +184,11 @@ class GMClient:
             if not player_id:
                 raise ValueError(f"player_id not found for session_id={session_id}")
 
-            items_url = f"{self.base_url}/state/session/{session_id}/items"
+            items_url = (
+                self._service_url("state", f"/state/session/{session_id}/items")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/items")
+            )
             items_resp = await client.get(items_url, headers=self._headers())
             items_resp.raise_for_status()
             items_data = self._unwrap(items_resp.json()) or []
@@ -145,7 +209,11 @@ class GMClient:
                     continue
                 rule_to_item_id.setdefault(rid_int, str(item_id))
 
-            earn_url = f"{self.base_url}/state/player/item/earn"
+            earn_url = (
+                self._service_url("state", "/state/player/item/earn")
+                if self.api_mode == "direct"
+                else self._service_url("be", "/state/player/item/earn")
+            )
             results: list[Dict[str, Any]] = []
             for rid in rule_ids:
                 item_id = rule_to_item_id.get(int(rid))
@@ -177,8 +245,59 @@ class GMClient:
 
     async def process_turn(self, session_id: str, content: str) -> GameTurnResponse:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/gm/turn"
+        if self.api_mode == "direct":
+            url = self._service_url("gm", "/api/v1/game/turn")
+        else:
+            url = self._service_url("be", "/gm/turn")
         payload = UserInput(session_id=session_id, content=content)
+
+        def _segment_contents(segments: Any, seg_type: str) -> list[str]:
+            if not isinstance(segments, list):
+                return []
+            out: list[str] = []
+            for seg in segments:
+                if not isinstance(seg, dict):
+                    continue
+                if str(seg.get("type") or "").strip() != seg_type:
+                    continue
+                content = str(seg.get("content") or "").strip()
+                if content:
+                    out.append(content)
+            return out
+
+        def _derive_fields(data: Dict[str, Any]) -> Dict[str, Any]:
+            segments = data.get("segments")
+            action = data.get("action")
+            narrative = data.get("narrative")
+            dialogue = data.get("dialogue")
+
+            if not action:
+                act_parts = _segment_contents(segments, "action")
+                if act_parts:
+                    action = "\n".join(act_parts).strip()
+
+            if not dialogue:
+                dlg_parts = _segment_contents(segments, "dialogue")
+                if dlg_parts:
+                    dialogue = "\n".join(dlg_parts).strip()
+
+            if not narrative:
+                nar_parts = _segment_contents(segments, "narration")
+                if nar_parts:
+                    narrative = "\n".join(nar_parts).strip()
+                else:
+                    # As a last resort, concatenate everything so the runner's
+                    # regex-based validations keep functioning.
+                    if isinstance(segments, list):
+                        all_parts = []
+                        for seg in segments:
+                            if isinstance(seg, dict):
+                                c = str(seg.get("content") or "").strip()
+                                if c:
+                                    all_parts.append(c)
+                        narrative = "\n".join(all_parts).strip() if all_parts else None
+
+            return {"action": action, "dialogue": dialogue, "narrative": narrative}
 
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
@@ -186,12 +305,23 @@ class GMClient:
             )
             response.raise_for_status()
             data = self._unwrap(response.json()) or {}
+            derived = _derive_fields(data)
             npc_data = data.get("npc_turn")
             npc_turn_obj = None
             if npc_data:
+                npc_derived = _derive_fields(npc_data)
                 npc_turn_obj = GameTurnResponse(
                     turn_id=npc_data.get("turn_id", ""),
-                    narrative=npc_data.get("narrative", ""),
+                    action=npc_derived.get("action"),
+                    narrative=npc_derived.get("narrative"),
+                    dialogue=npc_derived.get("dialogue"),
+                    outputs=npc_data.get("outputs"),
+                    segments=npc_data.get("segments"),
+                    current_act_id=npc_data.get("current_act_id"),
+                    current_sequence_id=npc_data.get("current_sequence_id"),
+                    session_status=npc_data.get("session_status"),
+                    is_session_ended=npc_data.get("is_session_ended"),
+                    transition=npc_data.get("transition"),
                     session_id=session_id,
                     commit_id=npc_data.get("commit_id"),
                     active_entity_id=npc_data.get("active_entity_id"),
@@ -201,9 +331,48 @@ class GMClient:
                     raw_response=npc_data,
                 )
 
+            npc_turns_data = data.get("npc_turns", [])
+            npc_turns_objs = []
+            if isinstance(npc_turns_data, list):
+                for n_data in npc_turns_data:
+                    if not isinstance(n_data, dict):
+                        continue
+                    n_derived = _derive_fields(n_data)
+                    npc_turns_objs.append(
+                        GameTurnResponse(
+                            turn_id=n_data.get("turn_id", ""),
+                            action=n_derived.get("action"),
+                            narrative=n_derived.get("narrative"),
+                            dialogue=n_derived.get("dialogue"),
+                            outputs=n_data.get("outputs"),
+                            segments=n_data.get("segments"),
+                            current_act_id=n_data.get("current_act_id"),
+                            current_sequence_id=n_data.get("current_sequence_id"),
+                            session_status=n_data.get("session_status"),
+                            is_session_ended=n_data.get("is_session_ended"),
+                            transition=n_data.get("transition"),
+                            session_id=session_id,
+                            commit_id=n_data.get("commit_id"),
+                            active_entity_id=n_data.get("active_entity_id"),
+                            active_entity_name=n_data.get("active_entity_name"),
+                            output_type=n_data.get("output_type"),
+                            is_npc_turn=True,
+                            raw_response=n_data,
+                        )
+                    )
+
             return GameTurnResponse(
                 turn_id=data.get("turn_id", ""),
-                narrative=data.get("narrative", ""),
+                action=derived.get("action"),
+                narrative=derived.get("narrative"),
+                dialogue=derived.get("dialogue"),
+                outputs=data.get("outputs"),
+                segments=data.get("segments"),
+                current_act_id=data.get("current_act_id"),
+                current_sequence_id=data.get("current_sequence_id"),
+                session_status=data.get("session_status"),
+                is_session_ended=data.get("is_session_ended"),
+                transition=data.get("transition"),
                 session_id=session_id,
                 commit_id=data.get("commit_id"),
                 active_entity_id=data.get("active_entity_id"),
@@ -211,12 +380,16 @@ class GMClient:
                 output_type=data.get("output_type"),
                 is_npc_turn=False,
                 npc_turn=npc_turn_obj,
+                npc_turns=npc_turns_objs,
                 raw_response=data,
             )
 
     async def process_npc_turn(self, session_id: str) -> GameTurnResponse:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/gm/npc-turn"
+        if self.api_mode == "direct":
+            url = self._service_url("gm", "/api/v1/game/npc-turn")
+        else:
+            url = self._service_url("be", "/gm/npc-turn")
         payload = {"session_id": session_id}
 
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -225,7 +398,16 @@ class GMClient:
             data = self._unwrap(response.json()) or {}
             return GameTurnResponse(
                 turn_id=data.get("turn_id", ""),
-                narrative=data.get("narrative", ""),
+                action=data.get("action"),
+                narrative=data.get("narrative"),
+                dialogue=data.get("dialogue"),
+                outputs=data.get("outputs"),
+                segments=data.get("segments"),
+                current_act_id=data.get("current_act_id"),
+                current_sequence_id=data.get("current_sequence_id"),
+                session_status=data.get("session_status"),
+                is_session_ended=data.get("is_session_ended"),
+                transition=data.get("transition"),
                 session_id=session_id,
                 commit_id=data.get("commit_id"),
                 active_entity_id=data.get("active_entity_id"),
@@ -237,7 +419,10 @@ class GMClient:
 
     async def get_history(self, session_id: str) -> List[Dict[str, Any]]:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/gm/history/{session_id}"
+        if self.api_mode == "direct":
+            url = self._service_url("gm", f"/api/v1/game/history/{session_id}")
+        else:
+            url = self._service_url("be", f"/gm/history/{session_id}")
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(url, headers=self._headers())
             response.raise_for_status()
@@ -246,7 +431,10 @@ class GMClient:
 
     async def get_summary(self, session_id: str) -> str:
         await self.ensure_authenticated()
-        url = f"{self.base_url}/gm/summary"
+        if self.api_mode == "direct":
+            url = self._service_url("gm", "/api/v1/game/summary")
+        else:
+            url = self._service_url("be", "/gm/summary")
         payload = {"session_id": session_id}
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(url, headers=self._headers(), json=payload)
@@ -260,7 +448,11 @@ class GMClient:
 
         async with httpx.AsyncClient(timeout=10.0) as client:
             # 1) Session baseline (GM fetch_state -> get_state)
-            session_url = f"{self.base_url}/state/session/{session_id}"
+            session_url = (
+                self._service_url("state", f"/state/session/{session_id}")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}")
+            )
             session_resp = await client.get(session_url, headers=self._headers())
             session_info = (
                 (self._unwrap(session_resp.json()) or {})
@@ -269,7 +461,11 @@ class GMClient:
             )
 
             # 2) Sequence details (GM fetch_state -> get_sequence_details)
-            seq_url = f"{self.base_url}/state/session/{session_id}/sequence/details"
+            seq_url = (
+                self._service_url("state", f"/state/session/{session_id}/sequence/details")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/sequence/details")
+            )
             seq_resp = await client.get(seq_url, headers=self._headers())
             seq_details = (
                 (self._unwrap(seq_resp.json()) or {})
@@ -278,7 +474,11 @@ class GMClient:
             )
 
             # 3) Act details (GM fetch_state -> get_act_details)
-            act_url = f"{self.base_url}/state/session/{session_id}/act/details"
+            act_url = (
+                self._service_url("state", f"/state/session/{session_id}/act/details")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/act/details")
+            )
             act_resp = await client.get(act_url, headers=self._headers())
             act_details = (
                 (self._unwrap(act_resp.json()) or {})
@@ -311,7 +511,11 @@ class GMClient:
             player_state = {}
             if player_id:
                 # Player 상태
-                player_url = f"{self.base_url}/state/player/{player_id}"
+                player_url = (
+                    self._service_url("state", f"/state/player/{player_id}")
+                    if self.api_mode == "direct"
+                    else self._service_url("be", f"/state/player/{player_id}")
+                )
                 player_resp = await client.get(player_url, headers=self._headers())
                 player_state = (
                     (self._unwrap(player_resp.json()) or {})
@@ -320,7 +524,11 @@ class GMClient:
                 )
 
             # Session NPC/Enemy/Inventory
-            npc_url = f"{self.base_url}/state/session/{session_id}/npcs"
+            npc_url = (
+                self._service_url("state", f"/state/session/{session_id}/npcs")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/npcs")
+            )
             npc_resp = await client.get(npc_url, headers=self._headers())
             npcs = (
                 (self._unwrap(npc_resp.json()) or [])
@@ -328,7 +536,11 @@ class GMClient:
                 else []
             )
 
-            enemy_url = f"{self.base_url}/state/session/{session_id}/enemies"
+            enemy_url = (
+                self._service_url("state", f"/state/session/{session_id}/enemies")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/enemies")
+            )
             enemy_resp = await client.get(enemy_url, headers=self._headers())
             enemies = (
                 (self._unwrap(enemy_resp.json()) or [])
@@ -336,7 +548,11 @@ class GMClient:
                 else []
             )
 
-            inv_url = f"{self.base_url}/state/session/{session_id}/inventory"
+            inv_url = (
+                self._service_url("state", f"/state/session/{session_id}/inventory")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/inventory")
+            )
             inv_resp = await client.get(inv_url, headers=self._headers())
             inventory = (
                 (self._unwrap(inv_resp.json()) or {})
@@ -344,7 +560,11 @@ class GMClient:
                 else {}
             )
 
-            items_url = f"{self.base_url}/state/session/{session_id}/items"
+            items_url = (
+                self._service_url("state", f"/state/session/{session_id}/items")
+                if self.api_mode == "direct"
+                else self._service_url("be", f"/state/session/{session_id}/items")
+            )
             items_resp = await client.get(items_url, headers=self._headers())
             items = (
                 (self._unwrap(items_resp.json()) or [])

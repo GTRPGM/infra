@@ -14,6 +14,7 @@ class ScenarioProfile:
     load_title_hint: str | None = None
     load_title_exact: str | None = None
     pinned_state_scenario_id: str | None = None
+    pinned_scenario_service_id: str | None = None
     starter_loadout_rule_ids: tuple[int, ...] = ()
 
 
@@ -38,6 +39,11 @@ def _load_profile(filename: str) -> ScenarioProfile:
             if lock_payload.get("state_scenario_id")
             else payload.get("pinned_state_scenario_id")
         ),
+        pinned_scenario_service_id=(
+            str(lock_payload.get("scenario_service_id"))
+            if lock_payload.get("scenario_service_id")
+            else None
+        ),
         starter_loadout_rule_ids=tuple(
             int(x) for x in payload.get("starter_loadout_rule_ids", [])
         ),
@@ -47,6 +53,7 @@ def _load_profile(filename: str) -> ScenarioProfile:
 THREE_SEQUENCE_COMBAT = _load_profile("three_sequence_combat.json")
 FIVE_SEQUENCE_EVALUATION = _load_profile("five_sequence_evaluation.json")
 SIX_SEQUENCE_THREE_ACT_EVAL = _load_profile("six_sequence_three_act_eval.json")
+MINIMAL_RELATION_TEST = _load_profile("minimal_relation_test.json")
 
 
 def get_profile(name: str | None) -> ScenarioProfile | None:
@@ -59,4 +66,6 @@ def get_profile(name: str | None) -> ScenarioProfile | None:
         return FIVE_SEQUENCE_EVALUATION
     if key == SIX_SEQUENCE_THREE_ACT_EVAL.name:
         return SIX_SEQUENCE_THREE_ACT_EVAL
+    if key == MINIMAL_RELATION_TEST.name:
+        return MINIMAL_RELATION_TEST
     return None

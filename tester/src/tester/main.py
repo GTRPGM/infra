@@ -72,6 +72,8 @@ async def run_step(request: StepRequest):
             logger.info("Requesting NPC turn...")
             npc_result = await agent.run_npc_step()
             logger.info(f"NPC Narrative: {npc_result.narrative[:100]}...")
+            if getattr(npc_result, "dialogue", None):
+                logger.info(f"NPC Dialogue: {npc_result.dialogue[:100]}...")
         except Exception as e:
             logger.warning(f"NPC turn skipped or failed: {str(e)}")
 

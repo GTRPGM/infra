@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Usage:
+#   tester/bin/run-local [session_id] [max_turns] [scenario_profile]
+#
+# Example:
+#   tester/bin/run-local local-smoke-1 5 six_sequence_three_act_eval
+
+SID="${1:-local-$(date +%s)}"
+TURNS="${2:-5}"
+PROFILE="${3:-six_sequence_three_act_eval}"
+
+export TESTER_ENV_FILE="${TESTER_ENV_FILE:-tester/.env.local}"
+export PYTHONPATH="${PYTHONPATH:-tester/src}"
+
+uv run python -m tester.runner "$SID" "$TURNS" "$PROFILE"
+

@@ -37,7 +37,16 @@ class UserInput(BaseModel):
 
 class GameTurnResponse(BaseModel):
     turn_id: str
-    narrative: str
+    action: Optional[str] = None
+    narrative: Optional[str] = None
+    dialogue: Optional[str] = None
+    outputs: Optional[List[Dict[str, Any]]] = None
+    segments: Optional[List[Dict[str, Any]]] = None
+    current_act_id: Optional[str] = None
+    current_sequence_id: Optional[str] = None
+    session_status: Optional[str] = None
+    is_session_ended: Optional[bool] = None
+    transition: Optional[Dict[str, Any]] = None
     session_id: str
     commit_id: Optional[str] = None
     active_entity_id: Optional[str] = "player"
@@ -46,4 +55,5 @@ class GameTurnResponse(BaseModel):
     is_npc_turn: bool = False
     # GM can return more fields, but we focus on these
     npc_turn: Optional["GameTurnResponse"] = None
+    npc_turns: Optional[List["GameTurnResponse"]] = None
     raw_response: Optional[Dict[str, Any]] = None

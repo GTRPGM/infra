@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import re
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
@@ -67,6 +68,7 @@ class IntegrationTestRunner:
         self.sequence_transition_events: List[Dict[str, Any]] = []
         self.sequence_trace: List[str] = []
         self.session_ended: bool = False
+        self.relation_history: List[Dict[str, Any]] = []
         # Setup logging immediately
         self.log_file = setup_logging(session_id)
 
@@ -181,6 +183,14 @@ class IntegrationTestRunner:
         else:
             lines.append("아이템 목록: 없음")
 
+        relations = self._gather_relations(state)
+        if relations["entity_relations"] or relations["player_npc_relations"]:
+            lines.append("관계 목록:")
+            for entry in self._relation_lines(relations):
+                lines.append(entry)
+        else:
+            lines.append("관계 목록: 없음")
+
         # Inventory / Owned Items
         inventory = state.get("inventory") or {}
         if isinstance(inventory, list):
@@ -220,6 +230,37 @@ class IntegrationTestRunner:
             if isinstance(rel, dict) and rel.get("npc_id"):
                 relation_ids.add(str(rel["npc_id"]))
         return relation_ids
+
+    def _gather_relations(self, state: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
+        seq = state.get("sequence") or {}
+        def safe_list(path: list | None) -> list:
+            return [rel for rel in (path or []) if isinstance(rel, dict)]
+
+        return {
+            "entity_relations": safe_list(seq.get("entity_relations")),
+            "player_npc_relations": safe_list(seq.get("player_npc_relations")),
+        }
+
+    def _relation_lines(self, relations: Dict[str, List[Dict[str, Any]]]) -> list[str]:
+        lines: list[str] = []
+        for rel in relations.get("entity_relations", []):
+            lines.append(
+                "  - entity: {from_id} -> {to_id} | type={type} affinity={affinity}".format(
+                    from_id=rel.get("from_id", "unknown"),
+                    to_id=rel.get("to_id", "unknown"),
+                    type=rel.get("relation_type", "unspecified"),
+                    affinity=rel.get("affinity", "?")
+                )
+            )
+        for rel in relations.get("player_npc_relations", []):
+            lines.append(
+                "  - player_npc: npc={npc_id} | relation={relation_type} affinity={affinity}".format(
+                    npc_id=rel.get("npc_id", "unknown"),
+                    relation_type=rel.get("relation_type", "unspecified"),
+                    affinity=rel.get("affinity", "?")
+                )
+            )
+        return lines
 
     def _sequence_entity_ids(self, state: Dict[str, Any]) -> set[str]:
         seq = state.get("sequence") or {}
@@ -628,11 +669,16 @@ class IntegrationTestRunner:
                 preferred_scenario_id=(
                     self.profile.pinned_state_scenario_id if self.profile else None
                 ),
+                preferred_scenario_service_id=(
+                    self.profile.pinned_scenario_service_id if self.profile else None
+                ),
                 preferred_scenario_title_exact=(
                     self.profile.load_title_exact if self.profile else None
                 ),
                 preferred_scenario_title=self.profile.load_title_hint if self.profile else None,
-                strict_load=bool(self.profile),
+                strict_load=bool(self.profile)
+                or str(os.getenv("TESTER_LOAD_ONLY", "")).strip().lower()
+                in {"1", "true", "yes", "y"},
             )
             self._log_state("세션 생성 완료: %s", self.session_id)
 
@@ -699,8 +745,13 @@ class IntegrationTestRunner:
                 combined_narrative = player_result.narrative
 
                 if npc_result and npc_result.narrative:
+                    if getattr(npc_result, "action", None):
+                        self._log_state("[GM (NPC action)]: %s", npc_result.action)
                     self._log_state("[GM (NPC 턴)]: %s", npc_result.narrative)
                     combined_narrative += f"\n(NPC 행동): {npc_result.narrative}"
+                    if getattr(npc_result, "dialogue", None):
+                        self._log_state("[GM (NPC 대사)]: %s", npc_result.dialogue)
+                        combined_narrative += f"\n(NPC 대사): {npc_result.dialogue}"
                 else:
                     self._log_state("[GM (NPC 턴)]: NPC 행동 없음.")
 
@@ -712,6 +763,20 @@ class IntegrationTestRunner:
                 current_state = await self.agent.client.get_session_state(
                     self.session_id
                 )
+                relations = self._gather_relations(current_state)
+                self.relation_history.append(
+                    {
+                        "turn": turn,
+                        "entity_relations": [dict(r) for r in relations["entity_relations"]],
+                        "player_npc_relations": [dict(r) for r in relations["player_npc_relations"]],
+                    }
+                )
+                if relations["entity_relations"] or relations["player_npc_relations"]:
+                    self._log_state(
+                        "[관계 추적] entity=%s player_npc=%s",
+                        len(relations["entity_relations"]),
+                        len(relations["player_npc_relations"]),
+                    )
                 self._assert_state_consistency(
                     turn=turn,
                     state=current_state,
@@ -766,6 +831,7 @@ class IntegrationTestRunner:
                         "session_status": (current_state.get("session") or {}).get(
                             "status"
                         ),
+                        "relations": relations,
                         "alive_enemies_in_current_sequence": self._count_alive_enemies_in_current_sequence(
                             current_state
                         ),
@@ -833,6 +899,7 @@ class IntegrationTestRunner:
             "alive_enemies_in_current_sequence": self._count_alive_enemies_in_current_sequence(
                 final_state
             ),
+            "relations": self.relation_history,
             "details": self.results,
         }
 
@@ -840,6 +907,7 @@ class IntegrationTestRunner:
 async def main():
     # Simple CLI for standalone runs
     import sys
+    import os
 
     # Default session ID generation
     default_sid = f"auto-test-{int(datetime.now().timestamp())}"
@@ -847,6 +915,12 @@ async def main():
     session_id = default_sid
     max_turns = 20
     scenario_profile = None
+    require_end = str(os.getenv("REQUIRE_SESSION_END", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+    }
 
     if len(sys.argv) > 1:
         session_id = sys.argv[1]
@@ -854,9 +928,19 @@ async def main():
         max_turns = int(sys.argv[2])
     if len(sys.argv) > 3:
         scenario_profile = sys.argv[3]
+    if len(sys.argv) > 4:
+        require_end = str(sys.argv[4]).strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "y",
+        }
 
     runner = IntegrationTestRunner(
-        session_id, max_turns=max_turns, scenario_profile=scenario_profile
+        session_id,
+        max_turns=max_turns,
+        require_session_end=require_end,
+        scenario_profile=scenario_profile,
     )
     await runner.run_full_test()
     # Print final JSON to console only, for piping if needed.

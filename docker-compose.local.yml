@@ -11,7 +11,6 @@ services:
       - POSTGRES_DB=gtrpgm
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - DB_DB=gtrpgm
     volumes:
       - ./db/postgres/initdb:/docker-entrypoint-initdb.d
       - pgdata:/var/lib/postgresql/data
@@ -20,6 +19,26 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - platform-net
+
+  db-migrator:
+    image: postgres:16-bookworm
+    restart: "no"
+    profiles:
+      - migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    command: >
+      sh -c "
+      until pg_isready -h postgres -U postgres; do sleep 1; done;
+      psql -h postgres -U postgres -d postgres -v ON_ERROR_STOP=1 -f /migrate/0001_monolith_to_service_split.sql
+      "
+    volumes:
+      - ./db/migrations:/migrate:ro
     networks:
       - platform-net
 
@@ -33,7 +52,7 @@ services:
 
   be-router:
     build:
-      context: ./services/BE-router
+      context: ./BE-router
       dockerfile: Dockerfile-dev
     restart: unless-stopped
     ports:
@@ -41,7 +60,7 @@ services:
     environment:
       APP_ENV: local
       APP_PORT: 8010
-      DB_USER: postgres
+      DB_USER: gtrpgm
       DB_PASSWORD: postgres
       DB_HOST: postgres
       DB_PORT: 5432
@@ -73,17 +92,17 @@ services:
       - platform-net
 
   gm:
-    build: ./services/gm
+    build: ./gm
     restart: unless-stopped
     ports:
       - "18020:8020"
     environment:
       PORT: 8020
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_SERVER: postgres
+      DB_USER: gm_user
+      DB_PASSWORD: gm_local_change_me
+      DB_HOST: postgres
       DB_PORT: 5432
-      DB_DB: gtrpgm
+      DB_NAME: gm_db
       STATE_MANAGER_PORT: 8030
       SCENARIO_SERVICE_HOST: scenario-service
       SCENARIO_SERVICE_PORT: 8040
@@ -99,7 +118,7 @@ services:
       - platform-net
 
   state-manager:
-    build: ./services/state-manager
+    build: ./state-manager
     restart: unless-stopped
     ports:
       - "18030:8030"
@@ -107,9 +126,9 @@ services:
       APP_PORT: 8030
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: gtrpgm
+      DB_USER: state_user
+      DB_PASSWORD: state_local_change_me
+      DB_NAME: state_db
       RULE_ENGINE_URL: http://rule-engine:8050
       GM_URL: http://gm:8020
     depends_on:
@@ -119,17 +138,17 @@ services:
       - platform-net
 
   scenario-service:
-    build: ./services/scenario-service
+    build: ./scenario-service
     restart: unless-stopped
     ports:
       - "18040:8040"
     environment:
       PORT: 8040
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      DB_USER: scenario_user
+      DB_PASSWORD: scenario_local_change_me
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: gtrpgm
+      DB_NAME: scenario_db
       STATE_MANAGER_HOST: state-manager
       STATE_MANAGER_PORT: 8030
       SCENARIO_SERVICE_HOST: scenario-service
@@ -146,13 +165,13 @@ services:
       - platform-net
 
   rule-engine:
-    build: ./services/rule-engine
+    build: ./rule-engine
     restart: unless-stopped
     ports:
       - "18050:8050"
     environment:
       APP_PORT: 8050
-      DB_USER: postgres
+      DB_USER: gtrpgm
       DB_PASSWORD: postgres
       DB_HOST: postgres
       DB_PORT: 5432
@@ -177,7 +196,7 @@ services:
       - platform-net
 
   llm-gateway:
-    build: ./services/llm-gateway
+    build: ./llm-gateway
     restart: unless-stopped
     ports:
       - "18060:8060"
@@ -192,7 +211,7 @@ services:
 
   web:
     build:
-      context: ./services/WEB
+      context: ./WEB
       args:
         WEB_PORT: 8080
         VITE_API_BASE_URL: http://be-router:8010

@@ -63,10 +63,18 @@ class TesterAgent:
         concept: str = "A dark fantasy dungeon exploration",
         force_generate: bool = False,
         preferred_scenario_id: str | None = None,
+        preferred_scenario_service_id: str | None = None,
         preferred_scenario_title_exact: str | None = None,
         preferred_scenario_title: str | None = None,
         strict_load: bool = False,
     ) -> tuple[str, dict]:
+        disable_scenario_service_inject = (
+            str(os.getenv("TESTER_DISABLE_SCENARIO_SERVICE_INJECT", ""))
+            .strip()
+            .lower()
+            in {"1", "true", "yes", "y"}
+        )
+
         # 1) Prefer already-injected scenarios via BE-router state API.
         scenarios = [] if force_generate else await self.client.get_scenarios()
         if scenarios:
@@ -176,6 +184,26 @@ class TesterAgent:
             ) or inject_result.get("data", {}).get("scenario_id")
             if not state_manager_scenario_id:
                 state_manager_scenario_id = scenario_id
+
+        # Ensure ScenarioService has context for the state scenario_id by (re)injecting
+        # via ScenarioService pinned ID when available.
+        if (
+            preferred_scenario_service_id
+            and not force_generate
+            and not disable_scenario_service_inject
+        ):
+            try:
+                inject_result = await self.client.inject_scenario(
+                    preferred_scenario_service_id
+                )
+                pinned_state_id = inject_result.get("scenario_id") or (
+                    inject_result.get("data", {}) if isinstance(inject_result, dict) else {}
+                ).get("scenario_id")
+                if pinned_state_id:
+                    state_manager_scenario_id = str(pinned_state_id)
+            except Exception:
+                # If reinject fails, keep the previously selected state scenario id.
+                pass
 
         # 3. Start Session (State Manager)
         session_id = await self.client.start_session(state_manager_scenario_id)

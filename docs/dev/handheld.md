@@ -7,14 +7,14 @@
 - **핵심 구조**:
   - `BE-router`: 외부 진입점(API Gateway, 인증/중계)
   - `gm`: 턴 오케스트레이션(룰/시나리오/상태/서술 통합)
-  - `rule-engine`: 룰 판정, 상태 diff 제안
+  - `rule-engine`: 룰 판정, 상태 diff 제안 (전투/대화/탐험 등 페이즈별 노드 실행)
   - `scenario-service`: 시나리오 생성/검증/주입
   - `state-manager`: 상태 SOT(SQL + Apache AGE 그래프)
   - `llm-gateway`: Gemini/OpenAI 공통 호출 계층
   - `WEB`: 프론트엔드
 
 ### Architecture link
-- <!-- PROJ_ARCH_LINK -->docs/dev/architect/architecture_v0.0.0.md
+- <!-- PROJ_ARCH_LINK -->docs/dev/architect/architecture_v0.1.0.md
 
 ### Repository map (핵심)
 - `docker-compose.local.yml`: 로컬 통합 실행 정의
@@ -25,9 +25,8 @@
 
 ### Current priorities
 - `[P0]` BE-router 경유 전체 게임 진행 플로우 정상 동작 검증
-  - 범위: 로그인 -> 시나리오 선택 -> 세션 생성 -> 세계 상태 요약 -> 턴 진행
-  - 기준: 엔드포인트 목적 적합성 + 턴/상태 반영 정합성
-- `[P9 - 최하순위]` `plan_0008` DB 분리/마이그레이션 재정렬
+- `[P1]` NPC/적 턴 `dialogue` 필드 제공(행동은 응답 미노출, 나레이션 입력으로만 사용)
+- `[Investigating]` 플레이어-NPC 관계 미생성 원인 파악 (rule-engine 로직 이슈 의심)
 
 ### Runtime topology (local compose)
 - External ports:
@@ -38,21 +37,23 @@
   - Rule Engine `18050 -> 8050`
   - LLM Gateway `18060 -> 8060`
   - Web `18080 -> 8080`
-  - Postgres:
-    - 통합 Postgres: `15432 -> 5432` (`postgres`)
-    - 참고: Graph/Play/Rule 분리는 `plan_0008`로 이관된 상태이며 현재 로컬 compose에는 반영되지 않음
+  - Postgres: `15432 -> 5432` (통합, 논리 분리)
   - Redis `16379`
 
 ### How to run
-- 전체 스택:
+- 전체 스택 (권장):
   ```bash
   ./bin/project up
   ./bin/project ps
   ```
+- 소스 수정 후 재빌드:
+  ```bash
+  ./bin/project build <service_name>
+  ./bin/project up  # 변경 사항 반영하여 재시작
+  ```
 - 로그 확인:
   ```bash
-  ./bin/project logs gm
-  ./bin/project logs state-manager
+  ./bin/project logs -f <service_name>
   ```
 - 종료:
   ```bash
@@ -60,60 +61,44 @@
   ```
 
 ### Health checks
-- `GET /health`:
-  - `http://localhost:18010/health` (BE-router)
-  - `http://localhost:18020/health` (GM)
-  - `http://localhost:18030/health` (State)
-  - `http://localhost:18040/health` (Scenario)
-  - `http://localhost:18050/health` (Rule)
-  - `http://localhost:18060/health` (LLM Gateway)
+- `GET /health` on ports `18010` ~ `18060`.
 
 ### Core request flows
 - 플레이어 턴:
-  1. Client -> `BE-router /gm/turn`
-  2. BE-router -> `GM /api/v1/game/turn`
-  3. GM -> State snapshot 조회
-  4. GM -> Rule Engine `/play/scenario`
-  5. GM -> Scenario Service `/api/v1/check/validate`
-  6. GM -> State Manager `/state/commit` (+ act/sequence 전이 API)
-  7. GM -> LLM Gateway로 narrative 생성
-  8. GM PlayLog 저장 후 응답
-- NPC 턴:
-  - GM이 동일 파이프라인을 자동 재실행하되, actor 선택(`npc`/`narrator`) 및 NPC 입력 생성 노드 포함
-- 시나리오 생성/주입:
-  1. Scenario Service `/api/v1/generation/pure|grounded|informed`
-  2. `/api/v1/manage/scenarios/{scenario_id}/inject`
-  3. 내부적으로 State Manager `/state/scenario/inject` 호출
+  1. Client -> `BE-router` -> `GM`
+  2. GM -> State snapshot 조회 -> `Rule Engine` (판정)
+  3. Rule Engine -> `Scenario Service` (검증) -> `State Manager` (Commit)
+  4. GM -> LLM (Narrative) -> Response
 
 ### How to test
-- 서비스별 단위 테스트(각 서비스 루트에서):
+- 서비스별 단위 테스트 (각 서비스 루트에서):
   ```bash
   uv run pytest tests/
   ```
-- 통합 턴 테스트(루트):
+- 통합 턴 테스트 (루트에서):
   ```bash
   PYTHONPATH=tester/src uv run python -m tester.runner <session_id> <max_turns>
   ```
 
 ### Conventions / gotchas
-- **DB 구성(현행)**:
-  - 현재 `docker-compose.local.yml`은 단일 `postgres` 컨테이너를 사용.
-  - DB 분리(Graph/Play/Rule)는 `plan_0008`로 추적 중이며 최하순위 작업.
-- **Migration**: `db/migration/run_migration.sh <dump_file>`을 통해 기존 통합 덤프를 자동으로 분할하여 각 DB에 주입 가능.
-- **State API prefix**: 대부분 `/state/*` 경로 사용 (`state-manager`가 라우터 등록 시 prefix 부여)
-- **Commit 입력 규약**: GM은 `turn_id = "{session_id}:{seq}"` 형식으로 커밋
-- **Scenario 주입 규약**: State 기준은 `rule_id` 정수 + `scenario_*_id` 문자열 규약
-- **Schema mismatch 리스크**:
-  - Scenario Service 내부 모델(`master_id`, `item_id`)과 State 주입 스키마(`rule_id`, `scenario_item_id`) 간 변환이 핵심 리스크
-- **Session 0 템플릿**: `00000000-0000-0000-0000-000000000000` 세션 데이터가 복제/주입 기준
-- **LLM 키 필요**: `OPENAI_API_KEY`/`GOOGLE_API_KEY` 미설정 시 관련 호출 실패 가능
-- **현재 미구현**: Scenario Service `POST /api/v1/manage/sessions/transition`
+- **Rule Engine - Relationship Issue**:
+  - `dialogue_node.py` 분석 결과, 요청에 포함된 관계(`state.request.relations`)가 존재해야만 `target_npc_state_id`를 식별하고 우호도를 업데이트함.
+  - **초기 만남 시 관계가 없으면(None) 관계 생성 로직을 타지 않고 로그만 남김("대화할 NPC를 찾을 수 없어...").** 이로 인해 신규 NPC와의 관계가 생성되지 않는 현상 발생 추정.
+- **DB 구성**: 단일 Postgres 컨테이너 내 논리적 DB 분리 사용.
+- **Migration**: `db/migration/run_migration.sh` 사용.
 <!-- PROJ_UNDERSTANDING_END -->
 
 <!-- PROJ_WORKNOTES_BEGIN -->
 ## Work Notes by Detail
 - `2026-02-06`: 루트 `docs/dev` 문서를 코드베이스 실상(다중 서비스/실제 엔드포인트/실행 커맨드) 기준으로 정리.
 - `2026-02-07`: 우선순위 재정렬. 정상 동작 검증(`plan_0012`)을 최우선으로 승격, DB 분리(`plan_0008`)는 최하순위로 이관.
+- `2026-02-09`: DB 분리 목표를 "논리 분리"로 확정.
+  - `plan_0008`은 `deprecated`로 전환.
+  - 현행 기준은 단일 Postgres 클러스터 내 서비스별 DB/권한/확장 분리 유지.
+- `2026-02-09`: 리모트 운영 환경 이슈 정리.
+  - `state-manager`: `REDIS_PORT`가 빈 문자열로 주입되면 부팅 중 `int('')` 파싱으로 크래시하며 재시작 루프에 빠짐. (운영 compose/env 주입 시 필수값 보장 필요)
+  - `scenario-service` debug inject/save: AGE `cypher()` 호출 시 graph/query/params 타입 캐스팅 누락으로 `cypher(...) does not exist` / `type agtype does not exist` 계열 오류가 발생할 수 있음.
+  - `scenario-service` 시나리오 생성: LLM 응답이 엄격 스키마(`PlannerOutput`) 필수 필드를 누락하면 `pydantic ValidationError`로 500이 발생. (생성 노드 리트라이/수정-재요청/스키마 완화 등 보강 필요)
 - `2026-02-07`: 종료 검증 보강.
   - `scenario-service`: act context 시퀀스 정렬 고정, 역전이 차단, terminal-trigger 시 `should_end=true` 반환.
   - `gm`: `should_end=true` 수신 시 `state/session/{id}/end` 호출, 종료 턴 내 마무리 문구 강제.
@@ -153,8 +138,11 @@
   - E2E:
     - `PYTHONPATH=tester/src uv run python -m tester.runner smoke-combat5 18 three_sequence_combat`
     - 결과: 3턴 조기 종료 제거, 적 HP 단계 감소 후 전원 제거 시점(10턴)에서 `status=ended`, enemies `[]` 확인.
+- `2026-02-09`: `plan_0030` 완료.
+  - `docs/dev/architect/architecture_v0.1.0.md` 생성: 전체 서비스/DB 구조도 및 서비스별 내부 아키텍처 포함.
+  - 서비스 경로 확인: `services/` 내부가 아니라 프로젝트 루트(`BE-router`, `gm`, `rule-engine` 등)가 실제 소스 위치임.
 - 다음 갱신 우선순위:
   1. BE-router 경유 정상 동작 게이트(`plan_0012`) 구축/고정
   2. 턴-상태 정합성 부정 케이스(불가능 행동 거절/상태 불변) 자동 검증 강화
-  3. `plan_0008` 재정렬은 상기 항목 완료 후 착수
+  3. DB 물리 분리 필요성 재발생 시 신규 플랜으로 별도 기안
 <!-- PROJ_WORKNOTES_END -->
