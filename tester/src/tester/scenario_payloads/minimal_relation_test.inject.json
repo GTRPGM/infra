@@ -1,0 +1,46 @@
+{
+  "title": "TST_MINIMAL_RELATION_TEST",
+  "description": "1 NPC / 1 Sequence 최소 관계(플레이어-NPC) 플로우 검증용",
+  "acts": [
+    {
+      "id": "act-1",
+      "name": "제 1막: 조우",
+      "description": "평원에서 상인을 만나 대화한다",
+      "exit_criteria": "상인과 대화하여 관계를 형성한다",
+      "sequences": ["seq-1"]
+    }
+  ],
+  "sequences": [
+    {
+      "id": "seq-1",
+      "name": "시퀀스 1: 평원",
+      "location_name": "평원",
+      "description": "평화로운 평원에서 상인을 만나 대화를 시작한다",
+      "goal": "NPC와 대화하여 관계를 형성하라.",
+      "exit_triggers": [],
+      "npcs": ["npc-merchant"],
+      "enemies": [],
+      "items": []
+    }
+  ],
+  "npcs": [
+    {
+      "scenario_npc_id": "npc-merchant",
+      "rule_id": 101,
+      "name": "떠돌이 상인",
+      "description": "친절해 보이는 상인입니다.",
+      "tags": ["merchant", "friendly"],
+      "state": {
+        "numeric": {
+          "HP": 100,
+          "SAN": 10
+        }
+      },
+      "is_departed": false
+    }
+  ],
+  "enemies": [],
+  "items": [],
+  "relations": []
+}
+

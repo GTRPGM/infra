@@ -141,6 +141,15 @@
 - `2026-02-09`: `plan_0030` 완료.
   - `docs/dev/architect/architecture_v0.1.0.md` 생성: 전체 서비스/DB 구조도 및 서비스별 내부 아키텍처 포함.
   - 서비스 경로 확인: `services/` 내부가 아니라 프로젝트 루트(`BE-router`, `gm`, `rule-engine` 등)가 실제 소스 위치임.
+- `2026-02-10`: `plan_0031` 완료.
+  - **문제 원인**: GM Service의 `TurnContext` (TypedDict)에 `final_relations` 필드가 누락되어, LangGraph 상태 전이 시 해당 정보가 유실되는 버그 확인.
+  - **조치**: `TurnContext` 스키마 보강 및 Rule Engine/GM/State Manager 전 구간 관계 형성 유닛 테스트 추가/검증 완료.
+- `2026-02-10`: `plan_0032` 완료.
+  - **작업 내용**: NPC/적 엔티티의 관계 기반 아이템 소유 및 드롭 시스템 구현.
+  - **핵심 조치**:
+    - `state-manager`: SQL `npc`, `enemy` 테이블에 `owned_items` 컬럼 추가 및 세션 시작 시 그래프 자동 동기화 트리거(`L_entity_inventory.sql`) 구현.
+    - `state-manager`: 엔티티 비활성화(`defeat_enemy`, `depart_npc`) 시 소유 아이템을 필드(Sequence)로 드롭하는 로직 구현.
+    - `scenario-service`: 주입 모델 및 LLM 프롬프트에 아이템 소유 구조 반영.
 - 다음 갱신 우선순위:
   1. BE-router 경유 정상 동작 게이트(`plan_0012`) 구축/고정
   2. 턴-상태 정합성 부정 케이스(불가능 행동 거절/상태 불변) 자동 검증 강화

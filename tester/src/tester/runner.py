@@ -253,11 +253,14 @@ class IntegrationTestRunner:
                 )
             )
         for rel in relations.get("player_npc_relations", []):
+            affinity_val = rel.get("affinity_score")
+            if affinity_val is None:
+                affinity_val = rel.get("affinity")
             lines.append(
                 "  - player_npc: npc={npc_id} | relation={relation_type} affinity={affinity}".format(
                     npc_id=rel.get("npc_id", "unknown"),
                     relation_type=rel.get("relation_type", "unspecified"),
-                    affinity=rel.get("affinity", "?")
+                    affinity=affinity_val if affinity_val is not None else "?",
                 )
             )
         return lines

@@ -52,7 +52,7 @@ services:
 
   be-router:
     build:
-      context: ./BE-router
+      context: ./services/BE-router
       dockerfile: Dockerfile-dev
     restart: unless-stopped
     ports:
@@ -92,7 +92,7 @@ services:
       - platform-net
 
   gm:
-    build: ./gm
+    build: ./services/gm
     restart: unless-stopped
     ports:
       - "18020:8020"
@@ -118,7 +118,7 @@ services:
       - platform-net
 
   state-manager:
-    build: ./state-manager
+    build: ./services/state-manager
     restart: unless-stopped
     ports:
       - "18030:8030"
@@ -138,7 +138,7 @@ services:
       - platform-net
 
   scenario-service:
-    build: ./scenario-service
+    build: ./services/scenario-service
     restart: unless-stopped
     ports:
       - "18040:8040"
@@ -165,7 +165,7 @@ services:
       - platform-net
 
   rule-engine:
-    build: ./rule-engine
+    build: ./services/rule-engine
     restart: unless-stopped
     ports:
       - "18050:8050"
@@ -196,7 +196,7 @@ services:
       - platform-net
 
   llm-gateway:
-    build: ./llm-gateway
+    build: ./services/llm-gateway
     restart: unless-stopped
     ports:
       - "18060:8060"
@@ -208,18 +208,6 @@ services:
       OPENAI_DEFAULT_MODEL: gpt-4o-mini
     networks:
       - platform-net
-
-  web:
-    build:
-      context: ./WEB
-      args:
-        WEB_PORT: 8080
-        VITE_API_BASE_URL: http://be-router:8010
-    restart: unless-stopped
-    ports:
-      - "18080:8080"
-    depends_on:
-      - be-router
 
 volumes:
   pgdata:

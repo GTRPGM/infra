@@ -38,10 +38,14 @@
 | plan_0028 | 서사-상태 정합 가드레일 | `docs/dev/detail/plan_0028.md` | done |
 | plan_0029 | NPC/적 턴 출력 구조화 (행동/대사 분리) | `docs/dev/detail/plan_0029.md` | done |
 | plan_0030 | 프로젝트 전체 구조도(서비스 및 db 단위) 작성 계획 | docs/dev/detail/plan_0030.md | done |
+| plan_0031 | 플레이어-NPC 관계 생성 누락 원인 파악 및 정합성 보강 | docs/dev/detail/plan_0031.md | done |
+| plan_0032 | NPC 및 적 엔티티의 관계 기반 아이템 소유 및 드롭 시스템 구현 | docs/dev/detail/plan_0032.md | done |
 <!-- PROJ_DASHBOARD_END -->
 
 <!-- PROJ_TODO_BEGIN -->
 ## TODO (Undone detail plans)
 - [ ] `docs/dev/detail/plan_0012.md`
+- [x] `docs/dev/detail/plan_0032.md`
+- [x] `docs/dev/detail/plan_0031.md`
 - [x] `docs/dev/detail/plan_0030.md`
 <!-- PROJ_TODO_END -->

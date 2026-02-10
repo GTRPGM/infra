@@ -16,8 +16,11 @@
       "name": "잠긴 문",
       "location_name": "폐허 입구",
       "description": "열쇠를 찾아 잠긴 문을 연다",
-      "goal": "녹슨 열쇠를 찾아 문을 열고 폐허 내부로 진입한다.",
+      "goal": "녹슨 열쇠를 찾아 문을 연고 폐허 내부로 진입한다.",
       "exit_triggers": ["녹슨 열쇠를 사용하여 문을 연다."],
+      "metadata": {
+        "sequence_type": "EXPLORATION"
+      },
       "npcs": [],
       "enemies": [],
       "items": ["item-rusty-key-1"]
@@ -29,6 +32,9 @@
       "description": "엘더와 협상해 통행 허가를 얻는다",
       "goal": "엘더와 대화하여 폐허 정보를 얻고 통과 허가를 받는다.",
       "exit_triggers": ["엘더에게서 정보를 얻고, 다음 장소로 이동한다."],
+      "metadata": {
+        "sequence_type": "NEGOTIATION"
+      },
       "npcs": ["npc-elder-1"],
       "enemies": [],
       "items": []
@@ -40,6 +46,9 @@
       "description": "전투로 위협을 제거한다",
       "goal": "고블린들을 물리치고 통로를 확보한다.",
       "exit_triggers": ["모든 고블린을 처치한다."],
+      "metadata": {
+        "sequence_type": "COMBAT"
+      },
       "npcs": [],
       "enemies": ["enemy-goblin-1", "enemy-goblin-2"],
       "items": []
@@ -53,8 +62,13 @@
       "description": "폐허의 길을 아는 노인",
       "tags": ["guide", "negotiation"],
       "state": {
-        "hp": 10
+        "numeric": {
+          "HP": 10,
+          "MP": 50,
+          "SAN": 10
+        }
       },
+      "items": [],
       "is_departed": false
     }
   ],
@@ -66,10 +80,16 @@
       "description": "민첩한 고블린",
       "tags": ["goblin", "melee"],
       "state": {
-        "hp": 30,
-        "attack": 6
+        "numeric": {
+          "HP": 30,
+          "attack": 6,
+          "defense": 2
+        }
       },
-      "dropped_items": []
+      "items": [
+        {"scenario_item_id": "item-gold-coin-1", "quantity": 10}
+      ],
+      "dropped_items": ["item-gold-coin-1"]
     },
     {
       "scenario_enemy_id": "enemy-goblin-2",
@@ -78,10 +98,16 @@
       "description": "거친 전사",
       "tags": ["goblin", "melee"],
       "state": {
-        "hp": 35,
-        "attack": 7
+        "numeric": {
+          "HP": 35,
+          "attack": 7,
+          "defense": 3
+        }
       },
-      "dropped_items": []
+      "items": [
+        {"scenario_item_id": "item-gold-coin-1", "quantity": 15}
+      ],
+      "dropped_items": ["item-gold-coin-1"]
     }
   ],
   "items": [
@@ -94,6 +120,14 @@
       "meta": {
         "quest_item": true
       }
+    },
+    {
+      "scenario_item_id": "item-gold-coin-1",
+      "rule_id": 3102,
+      "name": "금화",
+      "description": "반짝이는 금화",
+      "item_type": "misc",
+      "meta": {}
     }
   ],
   "relations": []
