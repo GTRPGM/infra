@@ -138,18 +138,28 @@
   - E2E:
     - `PYTHONPATH=tester/src uv run python -m tester.runner smoke-combat5 18 three_sequence_combat`
     - 결과: 3턴 조기 종료 제거, 적 HP 단계 감소 후 전원 제거 시점(10턴)에서 `status=ended`, enemies `[]` 확인.
-- `2026-02-09`: `plan_0030` 완료.
-  - `docs/dev/architect/architecture_v0.1.0.md` 생성: 전체 서비스/DB 구조도 및 서비스별 내부 아키텍처 포함.
-  - 서비스 경로 확인: `services/` 내부가 아니라 프로젝트 루트(`BE-router`, `gm`, `rule-engine` 등)가 실제 소스 위치임.
-- `2026-02-10`: `plan_0031` 완료.
-  - **문제 원인**: GM Service의 `TurnContext` (TypedDict)에 `final_relations` 필드가 누락되어, LangGraph 상태 전이 시 해당 정보가 유실되는 버그 확인.
-  - **조치**: `TurnContext` 스키마 보강 및 Rule Engine/GM/State Manager 전 구간 관계 형성 유닛 테스트 추가/검증 완료.
-- `2026-02-10`: `plan_0032` 완료.
-  - **작업 내용**: NPC/적 엔티티의 관계 기반 아이템 소유 및 드롭 시스템 구현.
-  - **핵심 조치**:
-    - `state-manager`: SQL `npc`, `enemy` 테이블에 `owned_items` 컬럼 추가 및 세션 시작 시 그래프 자동 동기화 트리거(`L_entity_inventory.sql`) 구현.
-    - `state-manager`: 엔티티 비활성화(`defeat_enemy`, `depart_npc`) 시 소유 아이템을 필드(Sequence)로 드롭하는 로직 구현.
-    - `scenario-service`: 주입 모델 및 LLM 프롬프트에 아이템 소유 구조 반영.
+- `2026-02-20`: state-manager 데이터 모델 원칙 점검 완료.
+  - 기준: 엔티티 속성은 SQL 테이블(`player/npc/enemy/item`), 관계(우호/적대/소유)는 그래프 엣지(`RELATION/CONTAINS/HAS_INVENTORY`).
+  - 근거: `B_*.sql`, `L_graph.sql`, `L_inventory.sql`, 관계/인벤토리 Cypher 쿼리, `router_COMMIT.py` -> `state_service.py` relation_updates 경로 확인.
+  - 검증: `cd services/state-manager && uv run python -m pytest tests/test_relation_cypher.py tests/test_inventory_cypher.py tests/test_graph_sync_triggers.py -q` 실행, `18 passed`.
+- `2026-02-20`: scenario-service 관계 생성/주입 정합성 점검.
+  - 적합: `scenario_engine` 패키징/주입 변환에서 `relations(from_id,to_id,relation_type)`를 엔티티 ID 참조로 유지하고, state-manager 주입 시 그래프 `RELATION` 엣지로 생성됨.
+  - 검증: `cd services/scenario-service && uv run python -m pytest tests/test_injection_schema.py tests/test_injection_reference_match.py tests/test_logic_id_consistency.py tests/test_asset_workflow.py -q` 실행, `7 passed`.
+  - 리스크: `relation_manager` 프롬프트가 관계 타입을 `affinity/ownership`로 제한하고 Enemy 비-ownership 관계를 금지하여, `hostile` 관계 생성 요구와 충돌 가능.
+- `2026-02-20`: scenario-service 생성 워크플로우 복구 및 목적별 재배치.
+  - 수정: `writer_graph`에 누락된 `_plan_reviewer_node`를 추가하고, 중복 정의된 `_writer_node`를 단일 "부분 병합 + 안정화 보정" 로직으로 통합.
+  - 재배치: `writer_graph.py`를 `Helpers / Pipeline Nodes / Conditional Edges / Public API` 순으로 재구성.
+  - 검증: `ScenarioWriterGraph` 초기화 `OK`, `tests/test_scenario_workflow.py tests/test_engine_resilience.py tests/test_injection_schema.py tests/test_injection_reference_match.py` 통과(`7 passed`).
+- `2026-02-20`: 단계별 3회 실패 폴백 정책 반영.
+  - 변경: `writer_graph`에 `plan_attempts/writer_attempts/asset_attempts` 카운터를 추가하고, 각 단계 리뷰 실패 3회 누적 시 즉시 `end`로 폴백.
+  - 검증: `tests/test_writer_graph_retry_policy.py` 추가, 관련 회귀 포함 `10 passed`.
+- `2026-02-20`: prompt-schema 정합성 점검 및 보강.
+  - planner/writer 프롬프트를 "단일 JSON 객체 + 필수 필드 누락 금지" 규칙으로 강화.
+  - relation_manager agent 스키마를 `PlannerOutput`에서 전용 `RelationManagerOutput`으로 교정.
+- `2026-02-20`: 단계별 생성/저장 플로우 추가.
+  - 추가 API: `/api/v1/generation/step/planner|writer|relation|continue`, `/api/v1/generation/step/checkpoints/{id}`.
+  - 목적: 한 번에 전체 생성하지 않고 단계별 실행/검토/수정 가능하도록 체크포인트 기반 흐름 제공.
+  - 실패 결과도 체크포인트(`/tmp/scenario-step-checkpoints/*.json`)에 저장되어 수동 수정/재시도 기반으로 활용 가능.
 - 다음 갱신 우선순위:
   1. BE-router 경유 정상 동작 게이트(`plan_0012`) 구축/고정
   2. 턴-상태 정합성 부정 케이스(불가능 행동 거절/상태 불변) 자동 검증 강화

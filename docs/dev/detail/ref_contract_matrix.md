@@ -56,3 +56,25 @@
 - `plan_0002`: Scenario schema naming and canonical parity hardening.
 - `plan_0003`: GM request/response strict contract alignment (especially transition path).
 - `plan_0004`: BE-router proxy contract hygiene and parity checks.
+
+## 5) BE-router Game Flow Endpoints (plan_0012)
+| Step | Action | Endpoint | Method | Key Fields |
+|---|---|---|---|---|
+| 1 | Login | `/auth/login` | POST | `username`, `password` |
+| 2 | Scenario Selection | `/state/scenarios` | GET | - |
+| 3 | Scenario Inject | `/scenario/manage/scenarios/{id}/inject` | POST | `id` (scenario_id) |
+| 4 | Session Start | `/state/session/start` | POST | `scenario_id` (state_manager_id) |
+| 5 | Opening Summary | `/gm/summary` | POST | `session_id` |
+| 6 | Turn Loop | `/gm/turn` | POST | `session_id`, `content` |
+| 7 | State Probe | `/state/session/{id}/...` | GET | `id` (session_id) |
+
+## 6) Key Identity Fields and Ownership
+| Field | Type | Owner | Note |
+|---|---|---|---|
+| `scenario_id` | UUID/Str | Scenario Service | Primary scenario template ID |
+| `state_manager_scenario_id` | Int/Str | State Manager | Primary key in `scenarios` table |
+| `session_id` | UUID | State Manager | Active game session identifier |
+| `turn_id` | Str | GM | Format: `{session_id}:{turn_num}` |
+| `act_id` | Str | Scenario/State | Format: `act-{N}` |
+| `seq_id` | Str | Scenario/State | Format: `seq-{N}` |
+| `entity_id` | Str | Scenario/State | Format: `npc-{N}`, `enemy-{N}`, `item-{N}` |

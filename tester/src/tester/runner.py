@@ -2,6 +2,7 @@ import asyncio
 import logging
 import re
 import os
+from uuid import UUID
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
@@ -33,7 +34,8 @@ def setup_logging(session_id: str):
     log_dir = Path("log")
     log_dir.mkdir(parents=True, exist_ok=True)
     log_filename = str(
-        log_dir / f"test_output_{session_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        log_dir
+        / f"test_output_{session_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
     )
     fh = logging.FileHandler(log_filename, encoding="utf-8")
     fh.setFormatter(formatter)
@@ -68,9 +70,17 @@ class IntegrationTestRunner:
         self.sequence_transition_events: List[Dict[str, Any]] = []
         self.sequence_trace: List[str] = []
         self.session_ended: bool = False
-        self.relation_history: List[Dict[str, Any]] = []
+        self.relation_change_seen: bool = False
         # Setup logging immediately
         self.log_file = setup_logging(session_id)
+
+    @staticmethod
+    def _is_uuid_like(value: str) -> bool:
+        try:
+            UUID(str(value))
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     def _log_test(message: str, *args: Any) -> None:
@@ -149,26 +159,26 @@ class IntegrationTestRunner:
         # NPC Stats
         if npcs:
             safe_npcs = [n for n in npcs if isinstance(n, dict)]
-            npc_str = ", ".join(
-                [
-                    f"{n.get('scenario_entity_id') or n.get('scenario_npc_id')}(HP:{self._hp_of(n)})"
-                    for n in safe_npcs
-                ]
+            npc_str = ", ".join([
+                f"{n.get('scenario_entity_id') or n.get('scenario_npc_id')}(HP:{self._hp_of(n)})"
+                for n in safe_npcs
+            ])
+            lines.append(
+                f"NPC 목록(현재 시퀀스 기준): {npc_str if npc_str else '없음'}"
             )
-            lines.append(f"NPC 목록(현재 시퀀스 기준): {npc_str if npc_str else '없음'}")
         else:
             lines.append("NPC 목록(현재 시퀀스 기준): 없음")
 
         # Enemy Stats
         if enemies:
             safe_enemies = [e for e in enemies if isinstance(e, dict)]
-            enemy_str = ", ".join(
-                [
-                    f"{e.get('scenario_entity_id') or e.get('scenario_enemy_id')}(HP:{self._hp_of(e)})"
-                    for e in safe_enemies
-                ]
+            enemy_str = ", ".join([
+                f"{e.get('scenario_entity_id') or e.get('scenario_enemy_id')}(HP:{self._hp_of(e)})"
+                for e in safe_enemies
+            ])
+            lines.append(
+                f"적 목록(현재 시퀀스 기준): {enemy_str if enemy_str else '없음'}"
             )
-            lines.append(f"적 목록(현재 시퀀스 기준): {enemy_str if enemy_str else '없음'}")
         else:
             lines.append("적 목록(현재 시퀀스 기준): 없음")
 
@@ -176,9 +186,9 @@ class IntegrationTestRunner:
         items = seq_details.get("items", [])
         if items:
             safe_items = [i for i in items if isinstance(i, dict)]
-            item_str = ", ".join(
-                [f"{i.get('scenario_item_id')}({i.get('name')})" for i in safe_items]
-            )
+            item_str = ", ".join([
+                f"{i.get('scenario_item_id')}({i.get('name')})" for i in safe_items
+            ])
             lines.append(f"아이템 목록: {item_str if item_str else '없음'}")
         else:
             lines.append("아이템 목록: 없음")
@@ -201,18 +211,22 @@ class IntegrationTestRunner:
             inv_items = []
         if inv_items:
             safe_inv_items = [i for i in inv_items if isinstance(i, dict)]
-            inv_item_str = ", ".join(
-                [
-                    (
-                        f"{i.get('scenario_item_id') or i.get('item_id')}"
-                        f"({i.get('name') or i.get('item_name') or 'unknown'})"
-                    )
-                    for i in safe_inv_items
-                ]
-            )
+            inv_item_str = ", ".join([
+                (
+                    f"{i.get('scenario_item_id') or i.get('item_id')}"
+                    f"({i.get('name') or i.get('item_name') or 'unknown'})"
+                )
+                for i in safe_inv_items
+            ])
             lines.append(f"인벤토리: {inv_item_str if inv_item_str else '없음'}")
         else:
             lines.append("인벤토리: 없음")
+
+        rel_sig = sorted(self._relation_signature(state))
+        if rel_sig:
+            lines.append(f"관계 스냅샷: {', '.join(rel_sig)}")
+        else:
+            lines.append("관계 스냅샷: 없음")
         lines.append("-" * (len(label) + 8))
 
         self._log_state("%s", "\n".join(lines))
@@ -226,44 +240,53 @@ class IntegrationTestRunner:
                     relation_ids.add(str(rel["from_id"]))
                 if rel.get("to_id"):
                     relation_ids.add(str(rel["to_id"]))
+        for rel in state.get("context_relations", []) or []:
+            if isinstance(rel, dict):
+                if rel.get("from_id"):
+                    relation_ids.add(str(rel["from_id"]))
+                if rel.get("to_id"):
+                    relation_ids.add(str(rel["to_id"]))
         for rel in seq.get("player_npc_relations", []) or []:
+            if isinstance(rel, dict) and rel.get("npc_id"):
+                relation_ids.add(str(rel["npc_id"]))
+        for rel in state.get("context_player_relations", []) or []:
             if isinstance(rel, dict) and rel.get("npc_id"):
                 relation_ids.add(str(rel["npc_id"]))
         return relation_ids
 
-    def _gather_relations(self, state: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
+    def _relation_signature(self, state: Dict[str, Any]) -> set[str]:
+        sig: set[str] = set()
         seq = state.get("sequence") or {}
-        def safe_list(path: list | None) -> list:
-            return [rel for rel in (path or []) if isinstance(rel, dict)]
+        entity_rels = (seq.get("entity_relations", []) or []) + (
+            state.get("context_relations", []) or []
+        )
+        player_rels = (seq.get("player_npc_relations", []) or []) + (
+            state.get("context_player_relations", []) or []
+        )
 
-        return {
-            "entity_relations": safe_list(seq.get("entity_relations")),
-            "player_npc_relations": safe_list(seq.get("player_npc_relations")),
-        }
-
-    def _relation_lines(self, relations: Dict[str, List[Dict[str, Any]]]) -> list[str]:
-        lines: list[str] = []
-        for rel in relations.get("entity_relations", []):
-            lines.append(
-                "  - entity: {from_id} -> {to_id} | type={type} affinity={affinity}".format(
-                    from_id=rel.get("from_id", "unknown"),
-                    to_id=rel.get("to_id", "unknown"),
-                    type=rel.get("relation_type", "unspecified"),
-                    affinity=rel.get("affinity", "?")
-                )
+        for rel in entity_rels:
+            if not isinstance(rel, dict):
+                continue
+            sig.add(
+                "|".join([
+                    str(rel.get("from_id", "")),
+                    str(rel.get("to_id", "")),
+                    str(rel.get("relation_type", "")),
+                    str(rel.get("affinity_score", rel.get("affinity", ""))),
+                ])
             )
-        for rel in relations.get("player_npc_relations", []):
-            affinity_val = rel.get("affinity_score")
-            if affinity_val is None:
-                affinity_val = rel.get("affinity")
-            lines.append(
-                "  - player_npc: npc={npc_id} | relation={relation_type} affinity={affinity}".format(
-                    npc_id=rel.get("npc_id", "unknown"),
-                    relation_type=rel.get("relation_type", "unspecified"),
-                    affinity=affinity_val if affinity_val is not None else "?",
-                )
+        for rel in player_rels:
+            if not isinstance(rel, dict):
+                continue
+            sig.add(
+                "|".join([
+                    "player",
+                    str(rel.get("npc_id", "")),
+                    str(rel.get("relation_type", "")),
+                    str(rel.get("affinity_score", rel.get("affinity", ""))),
+                ])
             )
-        return lines
+        return {x for x in sig if x.strip("|")}
 
     def _sequence_entity_ids(self, state: Dict[str, Any]) -> set[str]:
         seq = state.get("sequence") or {}
@@ -346,9 +369,7 @@ class IntegrationTestRunner:
         if not a or not b or a == b:
             return
         if last == [a, b, a, b, a, b]:
-            raise AssertionError(
-                f"[턴 {turn}] 시퀀스 진동 루프 감지: {a}<->{b} 반복"
-            )
+            raise AssertionError(f"[턴 {turn}] 시퀀스 진동 루프 감지: {a}<->{b} 반복")
 
     def _select_profile_action(self, state: Dict[str, Any]) -> str:
         if not self.profile:
@@ -357,7 +378,9 @@ class IntegrationTestRunner:
         session = state.get("session") or {}
         current_seq_id = str(session.get("current_sequence_id") or "")
         seq = state.get("sequence") or {}
-        triggers = [str(t).strip() for t in (seq.get("exit_triggers") or []) if str(t).strip()]
+        triggers = [
+            str(t).strip() for t in (seq.get("exit_triggers") or []) if str(t).strip()
+        ]
 
         trigger_hint = triggers[0] if triggers else ""
 
@@ -519,12 +542,30 @@ class IntegrationTestRunner:
                 for k in ("scenario_entity_id", "scenario_enemy_id", "enemy_id"):
                     if enemy.get(k):
                         known_ids.add(str(enemy.get(k)))
+        for item in (seq.get("items") or []) + (state.get("items") or []):
+            if isinstance(item, dict):
+                for k in ("scenario_item_id", "item_id", "id"):
+                    if item.get(k):
+                        known_ids.add(str(item.get(k)))
+        inventory = state.get("inventory") or {}
+        inv_items = (
+            inventory.get("items", [])
+            if isinstance(inventory, dict)
+            else (inventory if isinstance(inventory, list) else [])
+        )
+        for item in inv_items:
+            if isinstance(item, dict):
+                for k in ("scenario_item_id", "item_id", "id"):
+                    if item.get(k):
+                        known_ids.add(str(item.get(k)))
 
         rel_ids = self._extract_relation_entity_ids(state)
         for rel_id in rel_ids:
             if rel_id in known_ids:
                 continue
             if rel_id.startswith(("npc-", "enemy-", "item-", "player")):
+                continue
+            if self._is_uuid_like(rel_id):
                 continue
             raise AssertionError(f"[턴 {turn}] 관계 참조 ID 무결성 오류: {rel_id}")
 
@@ -678,7 +719,9 @@ class IntegrationTestRunner:
                 preferred_scenario_title_exact=(
                     self.profile.load_title_exact if self.profile else None
                 ),
-                preferred_scenario_title=self.profile.load_title_hint if self.profile else None,
+                preferred_scenario_title=self.profile.load_title_hint
+                if self.profile
+                else None,
                 strict_load=bool(self.profile)
                 or str(os.getenv("TESTER_LOAD_ONLY", "")).strip().lower()
                 in {"1", "true", "yes", "y"},
@@ -744,19 +787,31 @@ class IntegrationTestRunner:
                 self._log_state("[GM (나레이션)]: %s", player_result.narrative)
 
                 # 2. NPC Turn (Automatic in GM Core)
-                npc_result = player_result.npc_turn
+                npc_results = player_result.npc_turns or (
+                    [player_result.npc_turn] if player_result.npc_turn else []
+                )
                 combined_narrative = player_result.narrative
 
-                if npc_result and npc_result.narrative:
-                    if getattr(npc_result, "action", None):
-                        self._log_state("[GM (NPC action)]: %s", npc_result.action)
-                    self._log_state("[GM (NPC 턴)]: %s", npc_result.narrative)
-                    combined_narrative += f"\n(NPC 행동): {npc_result.narrative}"
-                    if getattr(npc_result, "dialogue", None):
-                        self._log_state("[GM (NPC 대사)]: %s", npc_result.dialogue)
-                        combined_narrative += f"\n(NPC 대사): {npc_result.dialogue}"
+                if npc_results:
+                    for i, npc_result in enumerate(npc_results, start=1):
+                        if not npc_result or not npc_result.narrative:
+                            continue
+                        actor = (
+                            npc_result.active_entity_name
+                            or npc_result.active_entity_id
+                            or "unknown"
+                        )
+                        self._log_state(
+                            "[GM (NPC/적 턴 %s - %s)]: %s",
+                            i,
+                            actor,
+                            npc_result.narrative,
+                        )
+                        combined_narrative += (
+                            f"\n(NPC/적 행동 {i}:{actor}): {npc_result.narrative}"
+                        )
                 else:
-                    self._log_state("[GM (NPC 턴)]: NPC 행동 없음.")
+                    self._log_state("[GM (NPC/적 턴)]: NPC 행동 없음.")
 
                 # 다음 턴을 위해 나레이션 업데이트
                 last_narrative = combined_narrative
@@ -767,13 +822,15 @@ class IntegrationTestRunner:
                     self.session_id
                 )
                 relations = self._gather_relations(current_state)
-                self.relation_history.append(
-                    {
-                        "turn": turn,
-                        "entity_relations": [dict(r) for r in relations["entity_relations"]],
-                        "player_npc_relations": [dict(r) for r in relations["player_npc_relations"]],
-                    }
-                )
+                self.relation_history.append({
+                    "turn": turn,
+                    "entity_relations": [
+                        dict(r) for r in relations["entity_relations"]
+                    ],
+                    "player_npc_relations": [
+                        dict(r) for r in relations["player_npc_relations"]
+                    ],
+                })
                 if relations["entity_relations"] or relations["player_npc_relations"]:
                     self._log_state(
                         "[관계 추적] entity=%s player_npc=%s",
@@ -786,6 +843,17 @@ class IntegrationTestRunner:
                     combined_narrative=combined_narrative,
                     player_action=action,
                 )
+                if self.prev_state:
+                    prev_rel = self._relation_signature(self.prev_state)
+                    now_rel = self._relation_signature(current_state)
+                    if now_rel != prev_rel:
+                        self.relation_change_seen = True
+                        self._log_change(
+                            "relation_changed turn=%s added=%s removed=%s",
+                            turn,
+                            sorted(now_rel - prev_rel),
+                            sorted(prev_rel - now_rel),
+                        )
                 self.prev_state = current_state
 
                 current_session = current_state.get("session") or {}
@@ -800,7 +868,11 @@ class IntegrationTestRunner:
 
                 if self.profile and seq_stage_idx >= 2:
                     seq_data = current_state.get("sequence") or {}
-                    enemies = seq_data.get("enemies", []) if isinstance(seq_data, dict) else []
+                    enemies = (
+                        seq_data.get("enemies", [])
+                        if isinstance(seq_data, dict)
+                        else []
+                    )
                     combat_hint = bool(
                         re.search(
                             r"(공격|전투|피해|타격|베기|찌르|적을 쓰러뜨)",
@@ -825,22 +897,26 @@ class IntegrationTestRunner:
                         turn,
                     )
 
-                self.results.append(
-                    {
-                        "turn": turn,
-                        "player_action": action,
-                        "gm_narrative": player_result.narrative,
-                        "npc_narrative": npc_result.narrative if npc_result else None,
-                        "session_status": (current_state.get("session") or {}).get(
-                            "status"
-                        ),
-                        "relations": relations,
-                        "alive_enemies_in_current_sequence": self._count_alive_enemies_in_current_sequence(
-                            current_state
-                        ),
-                        "status": "success",
-                    }
-                )
+                self.results.append({
+                    "turn": turn,
+                    "player_action": action,
+                    "gm_narrative": player_result.narrative,
+                    "npc_narrative": "\n".join([
+                        r.narrative
+                        for r in npc_results
+                        if r and isinstance(r.narrative, str) and r.narrative
+                    ])
+                    if npc_results
+                    else None,
+                    "session_status": (current_state.get("session") or {}).get(
+                        "status"
+                    ),
+                    "relations": relations,
+                    "alive_enemies_in_current_sequence": self._count_alive_enemies_in_current_sequence(
+                        current_state
+                    ),
+                    "status": "success",
+                })
 
                 self._log_test("제 %s 턴 완료.", turn)
                 if self.session_ended:
@@ -886,9 +962,7 @@ class IntegrationTestRunner:
         duration = (end_time - start_time).total_seconds()
 
         self._log_test("--- 통합 테스트 완료 (소요 시간: %.2f초) ---", duration)
-        final_state = (
-            self.prev_state if isinstance(self.prev_state, dict) else {}
-        )
+        final_state = self.prev_state if isinstance(self.prev_state, dict) else {}
         return {
             "session_id": self.session_id,
             "status": "success",
@@ -898,6 +972,7 @@ class IntegrationTestRunner:
             "scenario_profile": self.scenario_profile_name,
             "sequence_order": self.sequence_order,
             "sequence_combat_seen": self.sequence_combat_seen,
+            "relation_change_seen": self.relation_change_seen,
             "sequence_transitions": self.sequence_transition_events,
             "alive_enemies_in_current_sequence": self._count_alive_enemies_in_current_sequence(
                 final_state

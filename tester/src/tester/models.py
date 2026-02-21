@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # --- LLM Gateway Models ---
 
@@ -55,5 +55,5 @@ class GameTurnResponse(BaseModel):
     is_npc_turn: bool = False
     # GM can return more fields, but we focus on these
     npc_turn: Optional["GameTurnResponse"] = None
-    npc_turns: Optional[List["GameTurnResponse"]] = None
+    npc_turns: List["GameTurnResponse"] = Field(default_factory=list)
     raw_response: Optional[Dict[str, Any]] = None

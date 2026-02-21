@@ -67,6 +67,62 @@ class GMClient:
             headers["Authorization"] = f"Bearer {self._access_token}"
         return headers
 
+    @staticmethod
+    def _narrative_from_payload(data: Dict[str, Any]) -> str:
+        narrative = str(data.get("narrative") or "").strip()
+        if narrative:
+            return narrative
+        segments = data.get("segments") or []
+        if not isinstance(segments, list):
+            return ""
+        parts: list[str] = []
+        for seg in segments:
+            if not isinstance(seg, dict):
+                continue
+            content = str(seg.get("content") or "").strip()
+            if content:
+                parts.append(content)
+        return "\n".join(parts)
+
+    def _parse_turn_payload(
+        self, session_id: str, data: Dict[str, Any], is_npc_turn: bool
+    ) -> GameTurnResponse:
+        npc_turns_payload = data.get("npc_turns") or []
+        npc_turns: list[GameTurnResponse] = []
+        if isinstance(npc_turns_payload, list):
+            for npc_data in npc_turns_payload:
+                if not isinstance(npc_data, dict):
+                    continue
+                npc_turns.append(
+                    self._parse_turn_payload(session_id, npc_data, is_npc_turn=True)
+                )
+
+        npc_turn_obj = None
+        npc_data = data.get("npc_turn")
+        if isinstance(npc_data, dict):
+            npc_turn_obj = self._parse_turn_payload(
+                session_id, npc_data, is_npc_turn=True
+            )
+        elif npc_turns:
+            npc_turn_obj = npc_turns[0]
+
+        return GameTurnResponse(
+            turn_id=data.get("turn_id", ""),
+            narrative=self._narrative_from_payload(data),
+            session_id=session_id,
+            commit_id=data.get("commit_id"),
+            active_entity_id=data.get("active_entity_id"),
+            active_entity_name=data.get("active_entity_name"),
+            output_type=data.get("output_type"),
+            is_npc_turn=is_npc_turn,
+            npc_turn=npc_turn_obj,
+            npc_turns=npc_turns,
+            raw_response=data,
+        )
+
+    def _to_turn_response(self, session_id: str, data: Dict[str, Any]) -> GameTurnResponse:
+        return self._parse_turn_payload(session_id, data, is_npc_turn=False)
+
     async def ensure_authenticated(self) -> None:
         if self.api_mode == "direct":
             return
@@ -305,84 +361,7 @@ class GMClient:
             )
             response.raise_for_status()
             data = self._unwrap(response.json()) or {}
-            derived = _derive_fields(data)
-            npc_data = data.get("npc_turn")
-            npc_turn_obj = None
-            if npc_data:
-                npc_derived = _derive_fields(npc_data)
-                npc_turn_obj = GameTurnResponse(
-                    turn_id=npc_data.get("turn_id", ""),
-                    action=npc_derived.get("action"),
-                    narrative=npc_derived.get("narrative"),
-                    dialogue=npc_derived.get("dialogue"),
-                    outputs=npc_data.get("outputs"),
-                    segments=npc_data.get("segments"),
-                    current_act_id=npc_data.get("current_act_id"),
-                    current_sequence_id=npc_data.get("current_sequence_id"),
-                    session_status=npc_data.get("session_status"),
-                    is_session_ended=npc_data.get("is_session_ended"),
-                    transition=npc_data.get("transition"),
-                    session_id=session_id,
-                    commit_id=npc_data.get("commit_id"),
-                    active_entity_id=npc_data.get("active_entity_id"),
-                    active_entity_name=npc_data.get("active_entity_name"),
-                    output_type=npc_data.get("output_type"),
-                    is_npc_turn=True,
-                    raw_response=npc_data,
-                )
-
-            npc_turns_data = data.get("npc_turns", [])
-            npc_turns_objs = []
-            if isinstance(npc_turns_data, list):
-                for n_data in npc_turns_data:
-                    if not isinstance(n_data, dict):
-                        continue
-                    n_derived = _derive_fields(n_data)
-                    npc_turns_objs.append(
-                        GameTurnResponse(
-                            turn_id=n_data.get("turn_id", ""),
-                            action=n_derived.get("action"),
-                            narrative=n_derived.get("narrative"),
-                            dialogue=n_derived.get("dialogue"),
-                            outputs=n_data.get("outputs"),
-                            segments=n_data.get("segments"),
-                            current_act_id=n_data.get("current_act_id"),
-                            current_sequence_id=n_data.get("current_sequence_id"),
-                            session_status=n_data.get("session_status"),
-                            is_session_ended=n_data.get("is_session_ended"),
-                            transition=n_data.get("transition"),
-                            session_id=session_id,
-                            commit_id=n_data.get("commit_id"),
-                            active_entity_id=n_data.get("active_entity_id"),
-                            active_entity_name=n_data.get("active_entity_name"),
-                            output_type=n_data.get("output_type"),
-                            is_npc_turn=True,
-                            raw_response=n_data,
-                        )
-                    )
-
-            return GameTurnResponse(
-                turn_id=data.get("turn_id", ""),
-                action=derived.get("action"),
-                narrative=derived.get("narrative"),
-                dialogue=derived.get("dialogue"),
-                outputs=data.get("outputs"),
-                segments=data.get("segments"),
-                current_act_id=data.get("current_act_id"),
-                current_sequence_id=data.get("current_sequence_id"),
-                session_status=data.get("session_status"),
-                is_session_ended=data.get("is_session_ended"),
-                transition=data.get("transition"),
-                session_id=session_id,
-                commit_id=data.get("commit_id"),
-                active_entity_id=data.get("active_entity_id"),
-                active_entity_name=data.get("active_entity_name"),
-                output_type=data.get("output_type"),
-                is_npc_turn=False,
-                npc_turn=npc_turn_obj,
-                npc_turns=npc_turns_objs,
-                raw_response=data,
-            )
+            return self._to_turn_response(session_id, data)
 
     async def process_npc_turn(self, session_id: str) -> GameTurnResponse:
         await self.ensure_authenticated()
@@ -398,16 +377,7 @@ class GMClient:
             data = self._unwrap(response.json()) or {}
             return GameTurnResponse(
                 turn_id=data.get("turn_id", ""),
-                action=data.get("action"),
-                narrative=data.get("narrative"),
-                dialogue=data.get("dialogue"),
-                outputs=data.get("outputs"),
-                segments=data.get("segments"),
-                current_act_id=data.get("current_act_id"),
-                current_sequence_id=data.get("current_sequence_id"),
-                session_status=data.get("session_status"),
-                is_session_ended=data.get("is_session_ended"),
-                transition=data.get("transition"),
+                narrative=self._narrative_from_payload(data),
                 session_id=session_id,
                 commit_id=data.get("commit_id"),
                 active_entity_id=data.get("active_entity_id"),
@@ -572,6 +542,28 @@ class GMClient:
                 else []
             )
 
+            # Full context probe including graph relations.
+            context_url = f"{self.base_url}/state/session/{session_id}/context"
+            context_resp = await client.get(
+                context_url,
+                headers=self._headers(),
+                params={"include_inactive": "true"},
+            )
+            context_data = {}
+            if context_resp.status_code == 200:
+                context_data = self._unwrap(context_resp.json()) or {}
+            elif context_resp.status_code == 404:
+                # BE-router may not expose this path; query State Manager directly.
+                sm_url = (
+                    f"{settings.STATE_MANAGER_URL}/state/session/{session_id}/context"
+                )
+                sm_resp = await client.get(
+                    sm_url,
+                    params={"include_inactive": "true"},
+                )
+                if sm_resp.status_code == 200:
+                    context_data = self._unwrap(sm_resp.json()) or {}
+
             return {
                 "session": session_info,
                 "player": player_state,
@@ -582,4 +574,6 @@ class GMClient:
                 "inventory": inventory,
                 "items": items,
                 "gm_snapshot": gm_snapshot,
+                "context_relations": context_data.get("relations", []),
+                "context_player_relations": context_data.get("player_relations", []),
             }
