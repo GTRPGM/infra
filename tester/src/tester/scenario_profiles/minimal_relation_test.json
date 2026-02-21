@@ -1,0 +1,9 @@
+{
+    "name": "minimal_relation_test",
+    "concept": "A peaceful plain with a friendly wandering merchant NPC. The goal is to talk to the merchant and establish a relationship.",
+    "min_sequences": 1,
+    "scripted_actions": [
+        "상인에게 다가가 인사를 건네고 말을 걸어본다. '안녕하세요, 날씨가 좋네요!'"
+    ],
+    "load_title_hint": "Relation Test Scenario"
+}

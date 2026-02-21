@@ -1,0 +1,216 @@
+services:
+  postgres:
+    build: ./db/postgres
+    shm_size: '1gb'
+    restart: always
+    ports:
+      - "15432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gtrpgm
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    volumes:
+      - ./db/postgres/initdb:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - platform-net
+
+  db-migrator:
+    image: postgres:16-bookworm
+    restart: "no"
+    profiles:
+      - migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    command: >
+      sh -c "
+      until pg_isready -h postgres -U postgres; do sleep 1; done;
+      psql -h postgres -U postgres -d postgres -v ON_ERROR_STOP=1 -f /migrate/0001_monolith_to_service_split.sql
+      "
+    volumes:
+      - ./db/migrations:/migrate:ro
+    networks:
+      - platform-net
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+      - "16379:6379"
+    networks:
+      - platform-net
+
+  be-router:
+    build:
+      context: ./services/BE-router
+      dockerfile: Dockerfile-dev
+    restart: unless-stopped
+    ports:
+      - "18010:8010"
+    environment:
+      APP_ENV: local
+      APP_PORT: 8010
+      DB_USER: gtrpgm
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: gtrpgm
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      GM_HOST: gm
+      GM_PORT: 8020
+      STATE_MANAGER_HOST: state-manager
+      STATE_MANAGER_PORT: 8030
+      SCENARIO_SERVICE_HOST: scenario-service
+      SCENARIO_SERVICE_PORT: 8040
+      RULE_ENGINE_HOST: rule-engine
+      RULE_ENGINE_PORT: 8050
+      LLM_GATEWAY_HOST: llm-gateway
+      LLM_GATEWAY_PORT: 8060
+      APP_HOST: 0.0.0.0
+
+      WEB_PORT: 8080
+      SECRET_KEY: "absdefghijklmn"
+      ALGORITHM: "HS256"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - platform-net
+
+  gm:
+    build: ./services/gm
+    restart: unless-stopped
+    ports:
+      - "18020:8020"
+    environment:
+      PORT: 8020
+      DB_USER: gm_user
+      DB_PASSWORD: gm_local_change_me
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: gm_db
+      STATE_MANAGER_PORT: 8030
+      SCENARIO_SERVICE_HOST: scenario-service
+      SCENARIO_SERVICE_PORT: 8040
+      RULE_ENGINE_HOST: rule-engine
+      RULE_ENGINE_PORT: 8050
+      LLM_GATEWAY_HOST: llm-gateway
+      LLM_GATEWAY_PORT: 8060
+      LLM_MODEL_NAME: gpt-4o-mini
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - platform-net
+
+  state-manager:
+    build: ./services/state-manager
+    restart: unless-stopped
+    ports:
+      - "18030:8030"
+    environment:
+      APP_PORT: 8030
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: state_user
+      DB_PASSWORD: state_local_change_me
+      DB_NAME: state_db
+      RULE_ENGINE_URL: http://rule-engine:8050
+      GM_URL: http://gm:8020
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - platform-net
+
+  scenario-service:
+    build: ./services/scenario-service
+    restart: unless-stopped
+    ports:
+      - "18040:8040"
+    environment:
+      PORT: 8040
+      DB_USER: scenario_user
+      DB_PASSWORD: scenario_local_change_me
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: scenario_db
+      STATE_MANAGER_HOST: state-manager
+      STATE_MANAGER_PORT: 8030
+      SCENARIO_SERVICE_HOST: scenario-service
+      SCENARIO_SERVICE_PORT: 8040
+      RULE_ENGINE_HOST: rule-engine
+      RULE_ENGINE_PORT: 8050
+      LLM_GATEWAY_HOST: llm-gateway
+      LLM_GATEWAY_PORT: 8060
+      LLM_MODEL_NAME: gpt-4o-mini
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - platform-net
+
+  rule-engine:
+    build: ./services/rule-engine
+    restart: unless-stopped
+    ports:
+      - "18050:8050"
+    environment:
+      APP_PORT: 8050
+      DB_USER: gtrpgm
+      DB_PASSWORD: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: gtrpgm
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      STATE_MANAGER_HOST: state-manager
+      STATE_MANAGER_PORT: 8030
+      SCENARIO_SERVICE_HOST: scenario-service
+      SCENARIO_SERVICE_PORT: 8040
+      LLM_GATEWAY_HOST: llm-gateway
+      LLM_GATEWAY_PORT: 8060
+      LLM_MODEL_NAME: gpt-4o-mini
+      GM_HOST: gm
+      GM_PORT: 8020
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - platform-net
+
+  llm-gateway:
+    build: ./services/llm-gateway
+    restart: unless-stopped
+    ports:
+      - "18060:8060"
+    environment:
+      PORT: 8060
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DEFAULT_PROVIDER: openai
+      OPENAI_DEFAULT_MODEL: gpt-4o-mini
+    networks:
+      - platform-net
+
+volumes:
+  pgdata:
+
+networks:
+  platform-net:

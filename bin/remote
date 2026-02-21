@@ -1,0 +1,32 @@
+#!/bin/bash
+
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+    connect)
+        ssh -i "$GITHUB_DEPLOY_KEY_PATH" "$REMOTE_USERNAME@$REMOTE_HOST"
+        ;;
+    postgres)
+        ssh -i "$GITHUB_DEPLOY_KEY_PATH" -t "$REMOTE_USERNAME@$REMOTE_HOST" \
+        "docker exec -it postgres psql -U gtrpgm -d gtrpgm"
+        ;;
+    dump)
+        OUTPUT_FILE="dump_$(date +%Y%m%d_%H%M%S).sql"
+        echo "Dumping remote database to $OUTPUT_FILE..."
+        ssh -i "$GITHUB_DEPLOY_KEY_PATH" "$REMOTE_USERNAME@$REMOTE_HOST" \
+        "docker exec postgres pg_dump -U gtrpgm -d gtrpgm" > "$OUTPUT_FILE"
+
+        if [ $? -eq 0 ]; then
+            echo "Success: Dump saved to $OUTPUT_FILE"
+        else
+            echo "Error: Dump failed"
+            rm -f "$OUTPUT_FILE"
+            exit 1
+        fi
+        ;;
+    *)
+        echo "Usage: remote {connect|postgres|dump}"
+        exit 1
+        ;;
+esac

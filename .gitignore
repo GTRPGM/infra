@@ -39,6 +39,3 @@ tmp/
 .flaskenv
 .envrc
 *.code-workspace
-
-# Gemini related files
-.gemini/

@@ -1,0 +1,17 @@
+{
+  "name": "six_sequence_three_act_eval",
+  "concept": "3개 액트와 정확히 6개 시퀀스로 구성된 TRPG 시나리오를 생성하라. 흐름은 탐색->회수->협상->잠입->교전->결전으로 구성한다. goal/exit_trigger는 명확하고 검증 가능해야 한다.",
+  "min_sequences": 6,
+  "scripted_actions": [
+    "입구를 탐색해 첫 단서와 경로 정보를 확보한다.",
+    "필수 재료를 회수하고 다음 액트로 이동할 준비를 마친다.",
+    "NPC와 협상해 통행권과 봉인 정보를 얻는다.",
+    "봉인문 장치를 해제하고 내부 구역으로 잠입한다.",
+    "교전 구역의 적을 제압해 결전 구역 진입로를 확보한다.",
+    "핵심 적을 집중 공격해 봉인을 안정화하고 작전을 마무리한다."
+  ],
+  "load_title_exact": "TST_SIX_SEQUENCE_THREE_ACT_EVAL_V1",
+  "load_title_hint": "3액트 6시퀀스",
+  "pinned_state_scenario_id": null,
+  "starter_loadout_rule_ids": [7901, 7902]
+}

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+SESSION=gtrpgm-logs
+
+KEY="$GITHUB_DEPLOY_KEY_PATH"
+USER="$REMOTE_USERNAME"
+HOST="$REMOTE_HOST"
+
+CONTAINERS=(
+  scenario-service
+  rule-engine
+  llm-gateway
+  be-router
+  gm
+  state-manager
+  redis
+  postgres
+  web
+)
+
+# 이미 있으면 그냥 붙기
+tmux has-session -t "$SESSION" 2>/dev/null && tmux attach -t "$SESSION" && exit 0
+
+# 크게 세션 생성
+tmux new-session -d -s "$SESSION" -n logs -x 240 -y 70
+
+# 첫 pane
+tmux send-keys \
+  "ssh -i \"$KEY\" $USER@$HOST \"docker logs --tail=200 -f ${CONTAINERS[0]}\"" C-m
+
+idx=1
+
+for name in "${CONTAINERS[@]:1}"; do
+  tmux split-window -t "$SESSION:0" -h
+  tmux select-layout -t "$SESSION:0" tiled
+
+  tmux send-keys -t ! \
+    "ssh -i \"$KEY\" $USER@$HOST \"docker logs --tail=200 -f $name\"" C-m
+
+  idx=$((idx + 1))
+done
+
+tmux attach -t "$SESSION"
